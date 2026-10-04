@@ -22,47 +22,51 @@ flowchart TD
     T8 --> T9[Task 9: Auction Draft UI]
     T9 --> T10[Task 10: Auction Publish API]
     T10 --> T11[Task 11: Auction List & Details UI]
+    T11 --> T12[Task 12: Auction Watchlist & Bid History]
+    T12 --> T13[Task 13: Auction Q&A]
     
-    T11 -.-> CP4((🔍 CHECKPOINT 4))
+    T13 -.-> CP4((🔍 CHECKPOINT 4))
     
-    CP4 --> T12[Task 12: Proxy Bidding - Deposit Calculator]
-    T12 --> T13[Task 13: Proxy Bidding - Core Execution]
-    T13 --> T14[Task 14: Proxy Bidding - SignalR]
-    T14 --> T15[Task 15: Proxy Bidding - UI]
-    T15 --> T16[Task 16: Buy Now - Core API]
-    T16 --> T17[Task 17: Anti-Sniping - Hard Limit & BidStep]
+    CP4 --> T14[Task 14: Proxy Bidding - Deposit Calculator]
+    T14 --> T15[Task 15: Proxy Bidding - Core Execution]
+    T15 --> T16[Task 16: Proxy Bidding - SignalR]
+    T16 --> T17[Task 17: Proxy Bidding - UI]
+    T17 --> T18[Task 18: Buy Now - Core API]
+    T18 --> T19[Task 19: Anti-Sniping - Hard Limit & BidStep]
     
-    T17 -.-> CP5((🔍 CHECKPOINT 5))
+    T19 -.-> CP5((🔍 CHECKPOINT 5))
     
-    CP5 --> T18[Task 18: Checkout Escrow API]
-    T18 --> T19[Task 19: Winner Timeout Penalty Worker]
-    T19 --> T20[Task 20: 2nd Chance - Seller Decision]
-    T20 --> T21[Task 21: 2nd Chance - Bidder Confirmation]
+    CP5 --> T20[Task 20: Checkout Escrow API]
+    T20 --> T21[Task 21: Order - Change Shipping Address]
+    T21 --> T22[Task 22: Winner Timeout Penalty Worker]
+    T22 --> T23[Task 23: 2nd Chance - Seller Decision]
+    T23 --> T24[Task 24: 2nd Chance - Bidder Confirmation]
     
-    T21 -.-> CP6((🔍 CHECKPOINT 6))
+    T24 -.-> CP6((🔍 CHECKPOINT 6))
     
-    CP6 --> T22[Task 22: Shipping Outbox API]
-    T22 --> T23[Task 23: Logistics Webhook API]
-    T23 --> T24[Task 24: Order Management UI]
+    CP6 --> T25[Task 25: Shipping Outbox API]
+    T25 --> T26[Task 26: Logistics Forward & Forward LOST API]
+    T26 --> T27[Task 27: Order Management UI]
     
-    T24 -.-> CP7((🔍 CHECKPOINT 7))
+    T27 -.-> CP7((🔍 CHECKPOINT 7))
     
-    CP7 --> T25[Task 25: Return Flow - Initiation]
-    T25 --> T26[Task 26: Return Flow - Tracking & LOST]
-    T26 --> T27[Task 27: Return Flow - Seal Check & Dispute]
+    CP7 --> T28[Task 28: Return Flow - Initiation]
+    T28 --> T29[Task 29: Return Flow - Tracking & Return LOST]
+    T29 --> T30[Task 30: Return Flow - Seal Check & Dispute]
     
-    T27 -.-> CP8((🔍 CHECKPOINT 8))
+    T30 -.-> CP8((🔍 CHECKPOINT 8))
     
-    CP8 --> T28[Task 28: Dispute Ping-Pong Core]
-    T28 --> T29[Task 29: Dispute Ping-Pong UI]
-    T29 --> T30[Task 30: Dispute - Admin SLA & Liability]
+    CP8 --> T31[Task 31: Dispute Ping-Pong Core]
+    T31 --> T32[Task 32: Dispute Ping-Pong UI]
+    T32 --> T33[Task 33: Dispute - Admin SLA & Liability]
     
-    T30 -.-> CP9((🔍 CHECKPOINT 9))
+    T33 -.-> CP9((🔍 CHECKPOINT 9))
     
-    CP9 --> T31[Task 31: Privacy Data Masking API]
-    T31 --> T32[Task 32: Admin Ban & Mutual Ban]
-    T32 --> T33[Task 33: Admin Sweep Cascade API]
-    T33 --> T34[Task 34: Admin Dashboard UI]
+    CP9 --> T34[Task 34: Privacy Data Masking API]
+    T34 --> T35[Task 35: Admin Ban & Mutual Ban]
+    T35 --> T36[Task 36: Admin Sweep Cascade API]
+    T36 --> T37[Task 37: Admin Dashboard UI]
+    T37 --> T38[Task 38: Notifications & Hangfire Emails]
 ```
 
 ## SPIKE 1: RedLock & In-Memory Resolution
@@ -265,11 +269,39 @@ flowchart TD
 - **Testing Steps để test tay**: Vào trang chủ xem list.
 - **Phụ thuộc**: Task 10.
 
+## Task 12: Auction Watchlist & Bid History (F4, Engagement)
+- **Mục tiêu**: Chức năng theo dõi phiên (Watchlist) và xem lịch sử đặt giá công khai.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given User bấm thả tim, Then lưu vào Watchlist. Given truy cập lịch sử, Then thấy danh sách Bid (tên người dùng bị ẩn danh 1 phần).
+- **Lớp chạm tới**: DB (Bảng Watchlist) / API / UI.
+- **Endpoint | Màn hình**: `POST /api/auctions/{id}/watch`, `GET /api/auctions/{id}/bids` | Nút Tim, Tab Lịch sử Bid.
+- **File dự kiến**: `WatchlistCommand.cs`, `GetBidHistoryQuery.cs`, `WatchlistButton.tsx`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Bấm Watch -> Trả về 200 OK.
+  - Edge case 1: Trả về Bid History nhưng phải ẩn 3 số cuối điện thoại hoặc tên (VD: `Nguyễn V***`).
+- **Skill / MCP gợi ý**: `frontend-ui-engineering`.
+- **Rủi ro liên quan**: Lộ danh tính Bidder.
+- **Testing Steps để test tay**: Bấm theo dõi phiên, kiểm tra lịch sử giá xem danh tính có bị lộ không.
+- **Phụ thuộc**: Task 11.
+
+## Task 13: Auction Q&A (Engagement)
+- **Mục tiêu**: Hỏi đáp công khai trên Phiên đấu giá.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given User đặt câu hỏi, Then Seller nhận được thông báo để trả lời. Question & Answer hiện công khai trên trang chi tiết.
+- **Lớp chạm tới**: DB (Bảng Q&A) / API / UI.
+- **Endpoint | Màn hình**: `POST /api/auctions/{id}/questions` | Tab Hỏi Đáp.
+- **File dự kiến**: `Question.cs`, `AddQuestionCommand.cs`, `QnAPanel.tsx`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Thêm câu hỏi -> Trả về 201 Created.
+  - Edge case 1: Spam 10 câu hỏi/phút -> mong đợi 429 Rate Limit.
+- **Skill / MCP gợi ý**: `test-driven-development`.
+- **Rủi ro liên quan**: Không.
+- **Testing Steps để test tay**: User hỏi, Seller vào trả lời.
+- **Phụ thuộc**: Task 11.
+
 ---
 🔍 CHECKPOINT REVIEW 4
 ---
 
-## Task 12: Proxy Bidding - Deposit Calculator (F5)
+## Task 14: Proxy Bidding - Deposit Calculator (F5)
 - **Mục tiêu**: Tính toán `EffectiveDepositRate` dựa trên Dual-Tier và Health Score Demotion.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given User đặt MaxBid, When hệ thống tính tiền cọc, Then Rate = `Min(DepositRate(BuyerTier), DepositRate(SellerTier))`. Nếu HealthScore < ngưỡng, giáng cấp cọc xuống rate thấp hơn.
 - **Lớp chạm tới**: Domain Logic.
@@ -283,9 +315,9 @@ flowchart TD
 - **Testing Steps để test tay**: (Được test qua API Bidding ở task sau).
 - **Phụ thuộc**: Không.
 
-## Task 13: Proxy Bidding - Core Execution (F5)
+## Task 15: Proxy Bidding - Core Execution (F5)
 - **Mục tiêu**: Tích hợp RedLock và giải quyết Proxy Bidding In-Memory.
-- **Tiêu chí hoàn thành (Given/When/Then)**: Given MaxBid từ Buyer, When xử lý, Then dùng RedLock, tính toán cọc (Task 12), Hold tiền Wallet, so kè MaxBid in-memory, lưu DB 1 lần.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given MaxBid từ Buyer, When xử lý, Then dùng RedLock, tính toán cọc (Task 14), Hold tiền Wallet, so kè MaxBid in-memory, lưu DB 1 lần.
 - **Lớp chạm tới**: DB (Bảng Bids) / API.
 - **Endpoint | Màn hình**: `POST /api/auctions/{id}/bids` | Không UI.
 - **File dự kiến**: `PlaceBidCommand.cs`, `BidEngine.cs`.
@@ -296,9 +328,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: RISKS.md #1 (Race condition khi Bid).
 - **Testing Steps để test tay**: Dùng postman bid, xem HoldAmount tăng đúng tỷ lệ.
-- **Phụ thuộc**: SPIKE 1, Task 12.
+- **Phụ thuộc**: SPIKE 1, Task 14.
 
-## Task 14: Proxy Bidding - SignalR (F5)
+## Task 16: Proxy Bidding - SignalR (F5)
 - **Mục tiêu**: Bắn thông báo Real-time khi giá nhảy.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given giá CurrentPrice thay đổi, When PlaceBid xong, Then gửi Ping qua SignalR tới nhóm.
 - **Lớp chạm tới**: API (SignalR Hub).
@@ -309,9 +341,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `dotnet-architect`.
 - **Rủi ro liên quan**: Gửi nhầm Info nhạy cảm qua SignalR.
 - **Testing Steps để test tay**: Code client console test nhận event.
-- **Phụ thuộc**: Task 13.
+- **Phụ thuộc**: Task 15.
 
-## Task 15: Proxy Bidding - UI (F5)
+## Task 17: Proxy Bidding - UI (F5)
 - **Mục tiêu**: Nút Đặt giá, Modal, và đồng bộ SignalR.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given SignalR ping, When nhận được, Then UI fetch lại giá.
 - **Lớp chạm tới**: UI.
@@ -323,13 +355,13 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Không.
 - **Testing Steps để test tay**: Mở 2 tab, tab 1 bid, tab 2 tự nhảy.
-- **Phụ thuộc**: Task 11, Task 14.
+- **Phụ thuộc**: Task 11, Task 16.
 
 ---
 🔍 CHECKPOINT REVIEW 5
 ---
 
-## Task 16: Buy Now - Core API (F5)
+## Task 18: Buy Now - Core API (F5)
 - **Mục tiêu**: Chức năng Mua Ngay, chốt phiên lập tức.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given User bấm Buy Now, When xử lý, Then Hold 100% giá BuyNow, đóng phiên ngay lập tức, hủy bỏ các Bid khác.
 - **Lớp chạm tới**: DB / API.
@@ -341,9 +373,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `test-driven-development`.
 - **Rủi ro liên quan**: Race condition giữa Buy Now và Bid.
 - **Testing Steps để test tay**: Bắn Buy Now API, check DB xem Auction đóng chưa.
-- **Phụ thuộc**: Task 13.
+- **Phụ thuộc**: Task 15.
 
-## Task 17: Anti-Sniping - Hard Limit & BidStep (F5)
+## Task 19: Anti-Sniping - Hard Limit & BidStep (F5)
 - **Mục tiêu**: Chặn spam nhảy giá cuối giờ, áp dụng Dynamic BidStep.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given phiên còn <= 5 phút có bid, When xử lý, Then EndTime += 5 phút (Max Hard Limit +2h gốc) và BidStep thay đổi.
 - **Lớp chạm tới**: Domain Logic / API.
@@ -356,9 +388,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: RISKS.md #3 (Business Logic DoS).
 - **Testing Steps để test tay**: Sửa EndTime DB còn 1 phút, bắn Bid xem EndTime trên DB có tăng không.
-- **Phụ thuộc**: Task 13.
+- **Phụ thuộc**: Task 15.
 
-## Task 18: Checkout Escrow API (F6)
+## Task 20: Checkout Escrow API (F6)
 - **Mục tiêu**: Winner thanh toán 100% tiền mua vào Escrow, tạo Đơn hàng.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Auction đóng, When Winner xác nhận, Then chuyển tiền Wallet -> Escrow, tạo Order (AWAITING_SHIPMENT).
 - **Lớp chạm tới**: DB (Bảng Order) / API.
@@ -370,9 +402,24 @@ flowchart TD
 - **Skill / MCP gợi ý**: `security-and-hardening`.
 - **Rủi ro liên quan**: Checkout đúp (Double tạo Order).
 - **Testing Steps để test tay**: Bấm thanh toán, check DB Order.
-- **Phụ thuộc**: Task 16, 17.
+- **Phụ thuộc**: Task 18, 19.
 
-## Task 19: Winner Timeout Penalty Worker (F6)
+## Task 21: Order - Change Shipping Address API
+- **Mục tiêu**: Cho phép Buyer sửa địa chỉ tối đa 1 lần nếu đơn còn ở AWAITING_SHIPMENT.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given Order là AWAITING_SHIPMENT và AddressChangeCount = 0, When gọi API, Then cập nhật địa chỉ, Count++.
+- **Lớp chạm tới**: DB / API / UI.
+- **Endpoint | Màn hình**: `PUT /api/orders/{id}/address` | Quản lý Đơn Hàng.
+- **File dự kiến**: `ChangeAddressCommand.cs`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Đổi địa chỉ thành công, count = 1.
+  - Edge case 1: Đổi lần thứ 2 -> mong đợi HTTP 400.
+  - Edge case 2: Order đã SHIPPED -> mong đợi HTTP 400.
+- **Skill / MCP gợi ý**: `test-driven-development`.
+- **Rủi ro liên quan**: Không.
+- **Testing Steps để test tay**: Đổi địa chỉ lần 1, thử đổi lần 2 xem báo lỗi không.
+- **Phụ thuộc**: Task 20.
+
+## Task 22: Winner Timeout Penalty Worker (F6)
 - **Mục tiêu**: Quét các phiên đã đóng quá 24h mà Winner chưa Checkout.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Winner 1 quá hạn 24h, When Worker quét, Then Winner 1 bị trừ 5 điểm, mất 100% cọc vào tay Seller.
 - **Lớp chạm tới**: API (Hangfire Worker).
@@ -384,13 +431,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `ci-cd-and-automation`.
 - **Rủi ro liên quan**: Phạt lầm người đã thanh toán.
 - **Testing Steps để test tay**: Trigger job bằng tay, xem Winner 1 có mất cọc không.
-- **Phụ thuộc**: Task 18.
+- **Phụ thuộc**: Task 20.
 
----
-🔍 CHECKPOINT REVIEW 6
----
-
-## Task 20: 2nd Chance - Seller Decision (F6)
+## Task 23: 2nd Chance - Seller Decision (F6)
 - **Mục tiêu**: Xử lý logic Second Chance sau khi Winner 1 bị hủy đơn. Seller có quyền quyết định.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Winner 1 bị bùng, có 2nd Bidder, When Seller đồng ý bán tiếp, Then phiên mở 24h chờ 2nd Bidder.
 - **Lớp chạm tới**: DB / API / UI.
@@ -403,9 +446,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `test-driven-development`.
 - **Rủi ro liên quan**: Trạng thái Auction chồng chéo.
 - **Testing Steps để test tay**: Gọi API đề nghị 2nd chance.
-- **Phụ thuộc**: Task 19.
+- **Phụ thuộc**: Task 22.
 
-## Task 21: 2nd Chance - Bidder Confirmation (F6)
+## Task 24: 2nd Chance - Bidder Confirmation (F6)
 - **Mục tiêu**: 2nd Bidder đồng ý/từ chối mua lại món hàng.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given có đề nghị mua, When 2nd Bidder xác nhận thanh toán, Then trừ tiền, tạo Order. Nếu từ chối, hủy phiên.
 - **Lớp chạm tới**: DB / API / UI.
@@ -417,9 +460,13 @@ flowchart TD
 - **Skill / MCP gợi ý**: Không.
 - **Rủi ro liên quan**: Không.
 - **Testing Steps để test tay**: 2nd Bidder bấm Accept -> Check DB có Order.
-- **Phụ thuộc**: Task 20.
+- **Phụ thuộc**: Task 23.
 
-## Task 22: Shipping Outbox API (F7)
+---
+🔍 CHECKPOINT REVIEW 6
+---
+
+## Task 25: Shipping Outbox API (F7)
 - **Mục tiêu**: Cập nhật giao hàng, upload video evidence và bắn Event bằng Outbox.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Order đã thanh toán, When Seller xác nhận giao, Then upload evidence (private/), ghi Order SHIPPED và lưu sự kiện vào OutboxMessage.
 - **Lớp chạm tới**: DB (Bảng Outbox) / API.
@@ -431,25 +478,26 @@ flowchart TD
 - **Skill / MCP gợi ý**: `ci-cd-and-automation`.
 - **Rủi ro liên quan**: Sự cố đồng bộ MinIO và DB.
 - **Testing Steps để test tay**: Bấm Giao hàng, kiểm tra bảng Outbox.
-- **Phụ thuộc**: Task 18, 21.
+- **Phụ thuộc**: Task 20, 24.
 
-## Task 23: Logistics Webhook API (F8)
-- **Mục tiêu**: Nhận trạng thái giao từ bên vận chuyển.
-- **Tiêu chí hoàn thành (Given/When/Then)**: Given Webhook DELIVERED, Then đổi Order = DELIVERED, cho phép Buyer Refuse.
+## Task 26: Logistics Forward & Forward LOST API (F8)
+- **Mục tiêu**: Nhận Webhook trạng thái (DELIVERED, LOST trên chiều đi).
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given Webhook báo LOST trên chiều từ Seller -> Buyer, Then Order hủy, Buyer nhận 100% hoàn tiền, Seller nhận 100% bồi thường từ Insurance.
 - **Lớp chạm tới**: API.
 - **Endpoint | Màn hình**: `POST /api/webhooks/logistics` | Không UI.
 - **File dự kiến**: `LogisticsWebhookCommand.cs`.
 - **Test (Bắt buộc TDD)**: 
-  - Ca bình thường: Webhook hợp lệ -> Đổi state.
-  - Edge case 1: Replay webhook cũ -> Idempotency bỏ qua.
+  - Ca bình thường: Webhook DELIVERED hợp lệ -> Đổi state.
+  - Edge case 1: Webhook LOST chiều đi -> mong đợi 2 bên đều nhận tiền.
+  - Edge case 2: Replay webhook cũ -> Idempotency bỏ qua.
 - **Skill / MCP gợi ý**: `security-and-hardening`.
-- **Rủi ro liên quan**: Fake webhook logistics.
-- **Testing Steps để test tay**: Postman giả lập webhook -> check state Order.
-- **Phụ thuộc**: Task 22.
+- **Rủi ro liên quan**: Hacker bơm Webhook LOST.
+- **Testing Steps để test tay**: Postman giả lập webhook LOST chiều đi -> check số dư 2 bên.
+- **Phụ thuộc**: Task 25.
 
-## Task 24: Order Management UI (F6-8)
+## Task 27: Order Management UI (F6-8)
 - **Mục tiêu**: Bảng quản trị Đơn Hàng cho cả Buyer và Seller.
-- **Tiêu chí hoàn thành (Given/When/Then)**: Given đang xem list Order, When status đổi, Then render nút phù hợp (Ví dụ Seller thấy nút "Giao hàng", Buyer thấy "Nhận/Từ chối").
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given đang xem list Order, When status đổi, Then render nút phù hợp.
 - **Lớp chạm tới**: UI.
 - **Endpoint | Màn hình**: `GET /api/orders` | Trang Quản lý Đơn.
 - **File dự kiến**: `OrderListPage.tsx`, `OrderStatusBadge.tsx`.
@@ -458,13 +506,13 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Không.
 - **Testing Steps để test tay**: Login Buyer xem có thấy nút Ship hàng không (phải giấu đi).
-- **Phụ thuộc**: Task 22, 23.
+- **Phụ thuộc**: Task 21, 25, 26.
 
 ---
 🔍 CHECKPOINT REVIEW 7
 ---
 
-## Task 25: Return Flow - Initiation (F8)
+## Task 28: Return Flow - Initiation (F8)
 - **Mục tiêu**: Buyer Refused (Đổi ý) và tạo đơn hoàn hàng.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Order DELIVERED, When Buyer bấm Refuse, Then trạng thái sang RETURNING, sinh mã đơn hoàn.
 - **Lớp chạm tới**: DB / API.
@@ -476,23 +524,23 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: Buyer Refuse bừa bãi.
 - **Testing Steps để test tay**: Đơn đang DELIVERED, gọi Refuse -> Thành công.
-- **Phụ thuộc**: Task 23.
+- **Phụ thuộc**: Task 26.
 
-## Task 26: Return Flow - Tracking & LOST (F8, F9)
-- **Mục tiêu**: Nhận Webhook về hành trình hoàn hàng. Xử lý hàng thất lạc (LOST).
+## Task 29: Return Flow - Tracking & Return LOST (F8, F9)
+- **Mục tiêu**: Nhận Webhook về hành trình hoàn hàng. Xử lý hàng thất lạc chiều về (RETURN_LOST).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given hàng hoàn bị báo Mất, When Webhook LOST đến, Then Escrow nhả 100% cho Seller, hoàn 100% cho Buyer từ Insurance. Order = TERMINATED.
 - **Lớp chạm tới**: DB / API.
 - **Endpoint | Màn hình**: `POST /api/webhooks/logistics` (Mở rộng) | Không UI.
-- **File dự kiến**: `LogisticsWebhookCommand.cs` (Sửa logic LOST).
+- **File dự kiến**: `LogisticsWebhookCommand.cs` (Sửa logic RETURN_LOST).
 - **Test (Bắt buộc TDD)**: 
   - Ca bình thường: Webhook báo LOST -> Seller và Buyer đều nhận đủ tiền.
   - Edge case 1: Hàng LOST nhưng Order không ở trạng thái RETURNING -> HTTP 400 InvalidState.
 - **Skill / MCP gợi ý**: `test-driven-development`.
-- **Rủi ro liên quan**: Hacker bơm Webhook LOST để chiếm đoạt quỹ bảo hiểm.
-- **Testing Steps để test tay**: Postman bơm trạng thái LOST -> Check số dư 2 bên.
-- **Phụ thuộc**: Task 25.
+- **Rủi ro liên quan**: Mất tiền quỹ ảo.
+- **Testing Steps để test tay**: Postman bơm trạng thái RETURN_LOST -> Check số dư 2 bên.
+- **Phụ thuộc**: Task 28.
 
-## Task 27: Return Flow - Seal Check & Dispute (F8, F9)
+## Task 30: Return Flow - Seal Check & Dispute (F8, F9)
 - **Mục tiêu**: Seller nhận hàng, phát hiện rách Seal và mở Tranh chấp.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given hàng hoàn tới nơi, When Seller kiểm tra thấy rách Seal, Then Seller mở khiếu nại -> Trạng thái RETURN_DISPUTE.
 - **Lớp chạm tới**: DB / API / UI.
@@ -504,13 +552,13 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Không.
 - **Testing Steps để test tay**: Hàng hoàn tới, Seller bấm "Rách Seal" -> Order bay vào bảng Dispute.
-- **Phụ thuộc**: Task 25.
+- **Phụ thuộc**: Task 28.
 
 ---
 🔍 CHECKPOINT REVIEW 8
 ---
 
-## Task 28: Dispute Ping-Pong Core (F9)
+## Task 31: Dispute Ping-Pong Core (F9)
 - **Mục tiêu**: Lõi xử lý đàm phán hoàn tiền giữa 2 bên.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Dispute tạo, When 2 bên offer, Then chặn ở max 3 vòng, lưu lịch sử.
 - **Lớp chạm tới**: DB (Bảng Dispute) / API.
@@ -523,9 +571,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: Deadlock.
 - **Testing Steps để test tay**: Gửi offer 50%, bên kia Accept. Check ví hai bên.
-- **Phụ thuộc**: Task 27.
+- **Phụ thuộc**: Task 30.
 
-## Task 29: Dispute Ping-Pong UI (F9)
+## Task 32: Dispute Ping-Pong UI (F9)
 - **Mục tiêu**: Giao diện chat/ping-pong thương lượng.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given có tranh chấp, When xem, Then thấy Timeline đàm phán, ô nhập % đề xuất.
 - **Lớp chạm tới**: UI.
@@ -536,9 +584,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Nhầm phe.
 - **Testing Steps để test tay**: Test trên UI với 2 tài khoản.
-- **Phụ thuộc**: Task 28.
+- **Phụ thuộc**: Task 31.
 
-## Task 30: Dispute - Admin SLA & Liability (F9)
+## Task 33: Dispute - Admin SLA & Liability (F9)
 - **Mục tiêu**: Admin phán quyết tranh chấp và chịu trách nhiệm nếu quá hạn (Platform Liability).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given thương lượng thất bại, Admin nắm quyền. When quá SLA 7 ngày Admin không xử lý, Then Platform Liability kích hoạt: Seller nhận 100% Escrow, Buyer giữ hàng + hoàn 100% từ Insurance.
 - **Lớp chạm tới**: API (Hangfire Job quét SLA) / API Admin.
@@ -550,13 +598,13 @@ flowchart TD
 - **Skill / MCP gợi ý**: `dotnet-architect`.
 - **Rủi ro liên quan**: Lỗ quỹ trầm trọng nếu Admin lười.
 - **Testing Steps để test tay**: Chỉnh thời gian Dispute trên DB lùi lại 8 ngày, trigger Hangfire Worker -> Check quỹ bảo hiểm.
-- **Phụ thuộc**: Task 28.
+- **Phụ thuộc**: Task 31.
 
 ---
 🔍 CHECKPOINT REVIEW 9
 ---
 
-## Task 31: Privacy Data Masking API (F10)
+## Task 34: Privacy Data Masking API (F10)
 - **Mục tiêu**: Che giấu thông tin liên lạc (Contact Privacy) khi Order kết thúc.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Order trạng thái COMPLETED/CANCELLED (Terminal State), When GET Order DTO, Then SĐT/Zalo bị mask thành dạng `091***456`.
 - **Lớp chạm tới**: API (DTO Layer).
@@ -568,9 +616,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `security-and-hardening`.
 - **Rủi ro liên quan**: Lộ thông tin nhạy cảm.
 - **Testing Steps để test tay**: Dùng postman gọi API xem Order đã hoàn thành, kiểm tra SĐT có bị che không.
-- **Phụ thuộc**: Task 24.
+- **Phụ thuộc**: Task 27, 33.
 
-## Task 32: Admin Ban & Mutual Ban (F10)
+## Task 35: Admin Ban & Mutual Ban (F10)
 - **Mục tiêu**: Khóa User và chặn giao dịch mới lập tức. Xử lý tịch thu kép.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Admin Ban User, Then IsBanned=true, Wallet IsConfiscated=true. Given CẢ HAI Buyer/Seller bị Ban (Mutual Ban), Then tịch thu kép 100% dòng tiền Escrow vào Quỹ bảo hiểm.
 - **Lớp chạm tới**: DB / API.
@@ -582,9 +630,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `security-and-hardening`.
 - **Rủi ro liên quan**: Deadlock khi resolving Mutual Ban.
 - **Testing Steps để test tay**: Tạo Order, Ban Buyer -> Ban Seller -> Check System_Insurance_Fund tăng bằng đúng giá trị Order.
-- **Phụ thuộc**: Task 7, 18.
+- **Phụ thuộc**: Task 6, 20.
 
-## Task 33: Admin Sweep Cascade API (F10)
+## Task 36: Admin Sweep Cascade API (F10)
 - **Mục tiêu**: Hủy toàn bộ giao dịch PENDING và quét tiền vào Quỹ hệ thống (Confiscation Sweep).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given User bị Ban đơn lẻ, When quét, Then mọi yêu cầu Rút tiền bị hủy, tiền ví bị trừ về 0, chuyển sang System_Insurance_Fund. Đơn hàng xử lý Compensating action.
 - **Lớp chạm tới**: DB / API (Saga / Domain Event).
@@ -596,9 +644,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: RISKS.md #6 (Tẩu tán tài sản race condition).
 - **Testing Steps để test tay**: Tạo lệnh rút tiền, Admin ban user, check ví thấy = 0, lệnh rút tiền bị hủy.
-- **Phụ thuộc**: Task 32.
+- **Phụ thuộc**: Task 35.
 
-## Task 34: Admin Dashboard UI (F10)
+## Task 37: Admin Dashboard UI (F10)
 - **Mục tiêu**: Bảng điều khiển Admin để Quản lý User & Ban.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Admin login, When xem list, Then có nút Ban đỏ rực, bấm Ban hiện Modal cảnh báo tịch thu tài sản.
 - **Lớp chạm tới**: UI.
@@ -609,4 +657,18 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Lộ URL Admin cho User thường.
 - **Testing Steps để test tay**: Vào bằng user thường xem có bị 403 không.
-- **Phụ thuộc**: Task 33.
+- **Phụ thuộc**: Task 36.
+
+## Task 38: Notifications & Hangfire Emails
+- **Mục tiêu**: Dịch vụ thông báo In-app và Gửi Email qua Hangfire Worker.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given có sự kiện (Đấu giá thắng, bị bùng, bị Ban), When sinh Domain Event, Then Hangfire xử lý gửi Email và lưu Notification In-app.
+- **Lớp chạm tới**: DB (Bảng Notification) / API (Hangfire).
+- **Endpoint | Màn hình**: `GET /api/notifications` | Quả chuông trên Header UI.
+- **File dự kiến**: `NotificationWorker.cs`, `EmailService.cs`, `NotificationBadge.tsx`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Đấu giá thành công -> Email báo thắng được queue vào Hangfire.
+  - Edge case 1: Email Server (SMTP) bị lỗi (timeout) -> mong đợi Hangfire tự động Retry (Max 5 lần, Exponential Backoff).
+- **Skill / MCP gợi ý**: `ci-cd-and-automation`.
+- **Rủi ro liên quan**: Spam email gây block IP SMTP.
+- **Testing Steps để test tay**: Trigger 1 event thắng giải, vào Hangfire Dashboard (port 5000) xem Job gửi mail có Success không.
+- **Phụ thuộc**: Độc lập (gắn vào các Domain Events).
