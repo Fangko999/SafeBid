@@ -38,6 +38,46 @@ components:
                   code: { type: string }
                   message: { type: string }
 paths:
+  # Spikes
+  /spikes/redlock:
+    post:
+      summary: Spike 1 - RedLock & In-Memory Resolution
+      responses:
+        '200':
+          description: Successfully acquired lock and incremented counter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+
+  /spikes/webhook:
+    post:
+      summary: Spike 2 - HMAC-SHA256 Webhook & Idempotency
+      parameters:
+        - in: header
+          name: X-Signature
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId: { type: string }
+                amount: { type: number }
+                timestamp: { type: integer }
+      responses:
+        '200':
+          description: Processed
+        '401':
+          description: Unauthorized (Invalid signature or expired)
+        '409':
+          description: Conflict (Idempotency triggered)
+
   # Auth
   /auth/register:
     post:

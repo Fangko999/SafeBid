@@ -3,4 +3,7 @@
   <Folder Name="/src/Backend/">
     <Project Path="src/Backend/SafeBid.Api/SafeBid.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Tests/">
+    <Project Path="src/Tests/SafeBid.IntegrationTests/SafeBid.IntegrationTests.csproj" />
+  </Folder>
 </Solution>
