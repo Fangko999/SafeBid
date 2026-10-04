@@ -1,0 +1,6 @@
+@SafeBid.Api_HostAddress = http://localhost:5226
+
+GET {{SafeBid.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
