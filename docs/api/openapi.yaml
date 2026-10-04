@@ -1,0 +1,348 @@
+openapi: 3.0.3
+info:
+  title: SafeBid API
+  description: Event-Driven C2C Auction Platform API Contract. Designed around Vibe Code V5 Screen List.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code: { type: string }
+                  message: { type: string }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code: { type: string }
+                  message: { type: string }
+paths:
+  # Auth
+  /auth/register:
+    post:
+      summary: Register a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                fullName: { type: string }
+                phoneNumber: { type: string }
+                cccd: { type: string }
+      responses:
+        '201': { description: Registration successful }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200': { description: Login successful, headers: { Set-Cookie: { schema: { type: string } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # Users (Dashboard / Hồ Sơ)
+  /users/me:
+    get:
+      summary: Get current user profile
+      responses:
+        '200': { description: User profile with HealthScore and Tiers }
+  /users/me/addresses:
+    post:
+      summary: Add an address
+      responses:
+        '201': { description: Address created }
+  /users/me/addresses/{id}:
+    put:
+      summary: Update address
+      responses:
+        '200': { description: Address updated }
+    delete:
+      summary: Delete address
+      responses:
+        '200': { description: Address deleted }
+  /users/me/addresses/{id}/default:
+    put:
+      summary: Set as default address
+      responses:
+        '200': { description: Address set as default }
+
+  # Wallet
+  /wallet/balance:
+    get:
+      summary: Get wallet balance (Available and Hold)
+      responses:
+        '200': { description: Wallet balance }
+  /wallet/transactions:
+    get:
+      summary: Get wallet transactions history
+      responses:
+        '200': { description: Transaction history }
+  /wallet/deposit:
+    post:
+      summary: Initiate deposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount: { type: number, minimum: 10000 }
+      responses:
+        '200': { description: Deposit initiated, returns paymentUrl }
+  /wallet/withdraw:
+    post:
+      summary: Request withdrawal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount: { type: number, minimum: 10000 }
+      responses:
+        '200': { description: Withdrawal pending admin approval }
+
+  # Media
+  /media/upload:
+    post:
+      summary: Upload file (to temp/ bucket)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201': { description: File uploaded, returns temp URL }
+
+  # Auctions
+  /auctions:
+    get:
+      summary: List active auctions (Trang Chủ)
+      responses:
+        '200': { description: Paginated list of active auctions }
+    post:
+      summary: Create draft auction (Tạo Phiên)
+      responses:
+        '201': { description: Draft created }
+  /auctions/{id}:
+    get:
+      summary: Get auction details (Chi Tiết Phiên)
+      responses:
+        '200': { description: Auction details }
+  /auctions/{id}/publish:
+    post:
+      summary: Publish draft auction to ACTIVE
+      responses:
+        '200': { description: Published }
+  /auctions/{id}/bids:
+    post:
+      summary: Place a Proxy Bid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maxBid: { type: number }
+      responses:
+        '200': { description: Bid placed successfully }
+  /auctions/{id}/buy-now:
+    post:
+      summary: Buy Now
+      responses:
+        '200': { description: Purchase successful, pending confirmation }
+  /auctions/{id}/watchlist:
+    post:
+      summary: Add to watchlist
+      responses:
+        '200': { description: Added }
+    delete:
+      summary: Remove from watchlist
+      responses:
+        '200': { description: Removed }
+  /auctions/{id}/qa:
+    get:
+      summary: Get Q&A
+      responses:
+        '200': { description: Q&A list }
+    post:
+      summary: Post a question or answer
+      responses:
+        '201': { description: Q&A posted }
+  /auctions/{id}/confirm-checkout:
+    post:
+      summary: Winner confirms checkout and provides address
+      responses:
+        '200': { description: Escrow funded, transitions to Order AWAITING_SHIPMENT }
+
+  # Orders
+  /orders:
+    get:
+      summary: List orders (Quản Lý Đơn Hàng)
+      responses:
+        '200': { description: Paginated orders }
+  /orders/{id}:
+    get:
+      summary: Get order details (Chi Tiết Đơn Hàng). Applies Contact Masking for Terminal States.
+      responses:
+        '200': { description: Order details }
+  /orders/{id}/address:
+    put:
+      summary: Buyer updates delivery address (allowed 1 time)
+      responses:
+        '200': { description: Address updated }
+  /orders/{id}/ship:
+    post:
+      summary: Seller confirms shipment and provides video evidence hash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                evidenceHash: { type: string }
+      responses:
+        '200': { description: Marked as shipped }
+  /orders/{id}/confirm-delivery:
+    post:
+      summary: Buyer confirms delivery
+      responses:
+        '200': { description: Escrow released }
+  /orders/{id}/refuse:
+    post:
+      summary: Buyer refuses order (Đổi ý)
+      responses:
+        '200': { description: Triggers Return Flow }
+  /orders/{id}/dispute:
+    post:
+      summary: Buyer opens a dispute (Hàng giả/Lỗi)
+      responses:
+        '200': { description: Dispute created }
+
+  # Disputes
+  /disputes/{id}:
+    get:
+      summary: Get dispute details
+      responses:
+        '200': { description: Dispute info }
+  /disputes/{id}/negotiate:
+    post:
+      summary: Propose a split percentage
+      responses:
+        '200': { description: Proposal sent }
+  /disputes/{id}/accept:
+    post:
+      summary: Accept the proposed split
+      responses:
+        '200': { description: Dispute resolved, funds split }
+  /disputes/{id}/escalate:
+    post:
+      summary: Escalate to Admin
+      responses:
+        '200': { description: Escalated }
+
+  # Admin
+  /admin/users:
+    get:
+      summary: List users
+      responses:
+        '200': { description: User list }
+  /admin/users/{id}/ban:
+    post:
+      summary: Ban user (Triggers Cascade Cancellation)
+      responses:
+        '200': { description: User banned }
+  /admin/withdrawals:
+    get:
+      summary: List pending withdrawals
+      responses:
+        '200': { description: Withdrawal requests }
+  /admin/withdrawals/{id}/approve:
+    post:
+      summary: Approve withdrawal
+      responses:
+        '200': { description: Approved }
+
+  # Webhooks
+  /webhooks/payment:
+    post:
+      summary: Payment Gateway Webhook (HMAC-SHA256)
+      parameters:
+        - in: header
+          name: X-Signature
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId: { type: string }
+                amount: { type: number }
+                status: { type: string, enum: [SUCCESS, FAILED] }
+                timestamp: { type: integer }
+      responses:
+        '200': { description: Processed }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /webhooks/logistics:
+    post:
+      summary: Mock Logistics Webhook (HMAC-SHA256)
+      parameters:
+        - in: header
+          name: X-Signature
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trackingId: { type: string }
+                status: { type: string }
+                timestamp: { type: integer }
+      responses:
+        '200': { description: Processed }
+        '401': { $ref: '#/components/responses/Unauthorized' }

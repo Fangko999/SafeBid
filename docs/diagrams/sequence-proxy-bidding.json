@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Proxy Bidding Sequence",
+    "output": "docs/diagrams/sequence-proxy-bidding.html",
+    "viewBox": [900, 800],
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "buyer", "type": "external", "label": "Buyer", "sublabel": "bidder" },
+    { "id": "api", "type": "backend", "label": "SafeBid API", "sublabel": "controllers" },
+    { "id": "redis", "type": "database", "label": "Redis", "sublabel": "distributed lock" },
+    { "id": "db", "type": "database", "label": "SQL Server", "sublabel": "EF Core" },
+    { "id": "signalr", "type": "messagebus", "label": "SignalR Hub", "sublabel": "real-time" },
+    { "id": "hangfire", "type": "backend", "label": "Hangfire", "sublabel": "scheduler" }
+  ],
+  "segments": [
+    { "from": 150, "to": 310, "label": "Validation & Lock" },
+    { "from": 330, "to": 520, "label": "Proxy Resolution & DB Save" },
+    { "from": 530, "to": 650, "label": "Broadcast & Anti-Sniping" }
+  ],
+  "messages": [
+    { "from": "buyer", "to": "api", "y": 180, "label": "POST /bids { maxBid }", "variant": "emphasis" },
+    { "from": "api", "to": "redis", "y": 220, "label": "Acquire RedLock(AuctionId)", "variant": "emphasis" },
+    { "from": "redis", "to": "api", "y": 260, "label": "Lock Acquired", "variant": "return" },
+    { "from": "api", "to": "db", "y": 300, "label": "Read Auction & Wallet", "variant": "default" },
+    { "from": "db", "to": "api", "y": 340, "label": "State + RowVersion", "variant": "return" },
+    { "from": "api", "to": "db", "y": 380, "label": "Hold Deposit & Insert BidHistory", "variant": "emphasis" },
+    { "from": "db", "to": "api", "y": 420, "label": "Transaction Committed", "variant": "return" },
+    { "from": "api", "to": "redis", "y": 460, "label": "Release RedLock", "variant": "default" },
+    { "from": "api", "to": "buyer", "y": 500, "label": "200 OK", "variant": "return" },
+    { "from": "api", "to": "signalr", "y": 550, "label": "Broadcast New Price", "variant": "dashed" },
+    { "from": "api", "to": "hangfire", "y": 600, "label": "Check/Reschedule CloseAuction", "variant": "dashed" }
+  ],
+  "activations": [
+    { "participant": "api", "from": 174, "to": 610, "type": "backend" },
+    { "participant": "redis", "from": 214, "to": 270, "type": "database" },
+    { "participant": "db", "from": 294, "to": 350, "type": "database" },
+    { "participant": "db", "from": 374, "to": 430, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Concurrency Safety", "items": ["Uses RedLock to ensure strictly sequential bid processing per auction.", "In-memory proxy resolution prevents unnecessary DB roundtrips."] },
+    { "dot": "emerald", "title": "Transactional Guarantee", "items": ["Deposit hold and bid history are written in a single SQL transaction.", "EF Core RowVersion ensures wallet balance integrity."] }
+  ]
+}
