@@ -12,6 +12,8 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **Application Logic (MediatR Command Handler + Transaction):** `src/Backend/SafeBid.Application/RegisterCommandHandler.cs`
 - **Integration Test (Testcontainers + SharedFixture):** `src/Tests/SafeBid.IntegrationTests/AuthRegisterTests.cs`
 - **Integration Test (Yêu cầu xác thực/Cookie):** `src/Tests/SafeBid.IntegrationTests/AuthLoginTests.cs`
+- **Webhook Controller (HMAC Security):** `src/Backend/SafeBid.Api/Controllers/WebhooksController.cs`
+- **Integration Test (Webhook Security & Validation):** `src/Tests/SafeBid.IntegrationTests/WebhooksDepositTests.cs`
 - **Frontend Page Component (Next.js + Shadcn + Zod Form):** `src/Frontend/src/app/register/page.tsx`
 - **Frontend State Management (Zustand):** `src/Frontend/src/store/authStore.ts`
 - **Frontend TDD (Vitest + JSDOM + UserEvent):** `src/Frontend/src/app/register/register.test.tsx`
