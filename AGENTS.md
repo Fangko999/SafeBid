@@ -11,5 +11,6 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **API Controller (CQRS + Result Pattern):** `src/Backend/SafeBid.Api/Controllers/AuthController.cs`
 - **Application Logic (MediatR Command Handler + Transaction):** `src/Backend/SafeBid.Application/RegisterCommandHandler.cs`
 - **Integration Test (Testcontainers + SharedFixture):** `src/Tests/SafeBid.IntegrationTests/AuthRegisterTests.cs`
+- **Integration Test (Yêu cầu xác thực/Cookie):** `src/Tests/SafeBid.IntegrationTests/AuthLoginTests.cs`
 - **Frontend Page Component (Next.js + Shadcn + Zod Form):** `src/Frontend/src/app/register/page.tsx`
 - **Frontend TDD (Vitest + JSDOM + UserEvent):** `src/Frontend/src/app/register/register.test.tsx`
