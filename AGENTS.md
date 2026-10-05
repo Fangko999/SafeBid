@@ -7,4 +7,6 @@
 ---
 
 ## MẪU THAM CHIẾU
-*(Để trống)*
+- `src/Backend/SafeBid.Api/Controllers/AuthController.cs`: Mẫu API Controller chuẩn, sử dụng MediatR (CQRS) và Rate Limiting.
+- `src/Backend/SafeBid.Application/RegisterCommandHandler.cs`: Mẫu Command Handler CQRS, chứa Business Logic, khởi tạo Domain Entities, EF Core Transaction, và sử dụng Result Pattern.
+- `src/Tests/SafeBid.IntegrationTests/AuthRegisterTests.cs`: Mẫu Integration Test gọi API dùng Testcontainers và `SharedTestCollection` để tránh lỗi Race Condition khi tạo DB.
