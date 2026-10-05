@@ -43,4 +43,29 @@ public class AuthController : ControllerBase
 
         return Created("", new { UserId = result.Value });
     }
+
+    public record LoginRequest(string email, string password);
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var result = await _mediator.Send(new LoginCommand(request.email, request.password));
+
+        if (result.IsFailure)
+        {
+            return Unauthorized(new { error = new { code = result.Error.Code, message = result.Error.Message } });
+        }
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddDays(7),
+            Secure = false // Disable Secure for localhost testing without HTTPS
+        };
+
+        Response.Cookies.Append("jwt", result.Value, cookieOptions);
+
+        return Ok(new { message = "Login successful" });
+    }
 }

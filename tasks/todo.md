@@ -138,7 +138,7 @@ flowchart TD
 - **Testing Steps để test tay**: Mở localhost:3000/register, nhập linh tinh để xem validation, nhập chuẩn để xem Loading.
 - **Phụ thuộc**: Task 1.
 
-## Task 3: Auth Login API & JWT (F1)
+## ✅ Task 3: Auth Login API & JWT (F1) (HOÀN THÀNH)
 - **Mục tiêu**: Đăng nhập và set HttpOnly Cookie an toàn.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given login chuẩn, When API xử lý, Then Append-Cookie HttpOnly chứa JWT.
 - **Lớp chạm tới**: API (Tạo JWT, Cookie).
