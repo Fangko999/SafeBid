@@ -2,7 +2,7 @@
 
 ```mermaid
 flowchart TD
-    S1[~~SPIKE 1: RedLock In-Memory~~] --> S2[~~SPIKE 2: HMAC Webhook~~]
+    S1[✅ SPIKE 1: RedLock In-Memory] --> S2[✅ SPIKE 2: HMAC Webhook]
     S2 -.-> CP1((🔍 CHECKPOINT 1))
     
     CP1 --> T1[Task 1: Auth Register API]
@@ -71,9 +71,9 @@ flowchart TD
     T39 --> T40[Task 40: Notifications & Hangfire Emails]
 ```
 
-## ~~SPIKE 1: RedLock & In-Memory Resolution~~ (HOÀN THÀNH)
+## ✅ SPIKE 1: RedLock & In-Memory Resolution (HOÀN THÀNH)
 
-## ~~SPIKE 2: HMAC-SHA256 Webhook & Idempotency~~ (HOÀN THÀNH)
+## ✅ SPIKE 2: HMAC-SHA256 Webhook & Idempotency (HOÀN THÀNH)
 
 ---
 🔍 CHECKPOINT REVIEW 1
