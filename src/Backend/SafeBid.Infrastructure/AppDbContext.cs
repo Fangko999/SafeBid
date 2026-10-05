@@ -12,6 +12,7 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Wallet> Wallets => Set<Wallet>();
+    public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +30,12 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.RowVersion).IsRowVersion();
             entity.HasOne<User>().WithOne().HasForeignKey<Wallet>(e => e.UserId);
+        });
+
+        modelBuilder.Entity<LedgerEntry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
         });
     }
 }

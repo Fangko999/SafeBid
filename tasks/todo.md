@@ -171,7 +171,7 @@ flowchart TD
 🔍 CHECKPOINT REVIEW 2
 ---
 
-## Task 5: Deposit Webhook Core (F3)
+## ✅ Task 5: Deposit Webhook Core (F3) (HOÀN THÀNH)
 - **Mục tiêu**: Áp dụng SPIKE 2 vào nghiệp vụ nạp tiền thực tế.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given webhook SUCCESS, When xác thực xong, Then tạo Transaction, cộng tiền ví.
 - **Lớp chạm tới**: DB (Bảng WalletTransaction) / API.

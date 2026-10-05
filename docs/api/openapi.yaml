@@ -344,7 +344,7 @@ paths:
         '200': { description: Approved }
 
   # Webhooks
-  /webhooks/payment:
+  /webhooks/deposit:
     post:
       summary: Payment Gateway Webhook (HMAC-SHA256)
       parameters:
@@ -360,6 +360,7 @@ paths:
               type: object
               properties:
                 transactionId: { type: string }
+                referenceId: { type: string }
                 amount: { type: number }
                 status: { type: string, enum: [SUCCESS, FAILED] }
                 timestamp: { type: integer }
