@@ -13,4 +13,5 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **Integration Test (Testcontainers + SharedFixture):** `src/Tests/SafeBid.IntegrationTests/AuthRegisterTests.cs`
 - **Integration Test (Yêu cầu xác thực/Cookie):** `src/Tests/SafeBid.IntegrationTests/AuthLoginTests.cs`
 - **Frontend Page Component (Next.js + Shadcn + Zod Form):** `src/Frontend/src/app/register/page.tsx`
+- **Frontend State Management (Zustand):** `src/Frontend/src/store/authStore.ts`
 - **Frontend TDD (Vitest + JSDOM + UserEvent):** `src/Frontend/src/app/register/register.test.tsx`
