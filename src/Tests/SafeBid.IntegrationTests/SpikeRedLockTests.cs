@@ -1,6 +1,8 @@
 using System.Text.Json.Nodes;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using Testcontainers.MsSql;
+using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,19 +16,25 @@ public class ApiTestFixture : WebApplicationFactory<Program>, IAsyncLifetime
         .WithPortBinding(6379, true)
         .Build();
 
+    private readonly MsSqlContainer _dbContainer = new MsSqlBuilder()
+        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+        .Build();
+
     public async Task InitializeAsync()
     {
-        await _redisContainer.StartAsync();
+        await Task.WhenAll(_redisContainer.StartAsync(), _dbContainer.StartAsync());
         Environment.SetEnvironmentVariable("REDIS_CONNECTION", $"{_redisContainer.Hostname}:{_redisContainer.GetMappedPublicPort(6379)}");
+        Environment.SetEnvironmentVariable("DB_CONNECTION_STRING", _dbContainer.GetConnectionString());
     }
 
     public new async Task DisposeAsync()
     {
-        await _redisContainer.DisposeAsync();
+        await Task.WhenAll(_redisContainer.DisposeAsync().AsTask(), _dbContainer.DisposeAsync().AsTask());
     }
 }
 
-public class SpikeRedLockTests : IClassFixture<ApiTestFixture>
+[Collection("IntegrationTests")]
+public class SpikeRedLockTests
 {
     private readonly HttpClient _client;
 

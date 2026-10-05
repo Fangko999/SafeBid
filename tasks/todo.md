@@ -109,7 +109,7 @@ flowchart TD
 🔍 CHECKPOINT REVIEW 1
 ---
 
-## Task 1: Auth Register API (F1)
+## ✅ Task 1: Auth Register API (F1) (HOÀN THÀNH)
 - **Mục tiêu**: Xử lý đăng ký tài khoản và Rate Limiting 5 lần/phút. Khởi tạo uy tín User.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given user hợp lệ, When POST đăng ký, Then lưu DB với HealthScore = 100, BuyerTier = Bronze, SellerTier = Bronze.
 - **Lớp chạm tới**: DB (Bảng Users) / API.

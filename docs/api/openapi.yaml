@@ -97,6 +97,7 @@ paths:
       responses:
         '201': { description: Registration successful }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { description: Too Many Requests }
   /auth/login:
     post:
       summary: Login

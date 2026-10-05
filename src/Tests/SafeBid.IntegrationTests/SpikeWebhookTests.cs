@@ -9,7 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SafeBid.IntegrationTests;
 
-public class SpikeWebhookTests : IClassFixture<ApiTestFixture>
+[Collection("IntegrationTests")]
+public class SpikeWebhookTests
 {
     private readonly HttpClient _client;
     private const string Secret = "my_super_secret_webhook_key"; // Same as in app config
