@@ -124,7 +124,7 @@ flowchart TD
 - **Testing Steps để test tay**: Postman gọi 6 lần liên tiếp xem báo 429 không. Check DB xem HealthScore và Tier đúng chuẩn mặc định chưa.
 - **Phụ thuộc**: Không.
 
-## Task 2: Auth Register UI (F1)
+## ✅ Task 2: Auth Register UI (F1) (HOÀN THÀNH)
 - **Mục tiêu**: Xây dựng màn hình Đăng ký phía Next.js.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given form điền đủ, When bấm nút, Then hiện Loading, gọi API và hiện Success toast.
 - **Lớp chạm tới**: UI (Page, Form Component).
@@ -736,6 +736,12 @@ flowchart TD
 - **Phụ thuộc**: Task 41.
 
 ## Task 43: Notifications & Hangfire Emails
+- **Mục tiêu**: ... (Task 43 content)
+
+## Task: Forgot / Reset Password (Backlog v1.1)
+- **Mục tiêu**: Hỗ trợ người dùng quên mật khẩu.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given gửi yêu cầu, Then nhận email chứa mã Reset. Nhập mã đổi mật khẩu thành công.
+- **Phụ thuộc**: Task 43 (Hangfire Emails).
 - **Mục tiêu**: Dịch vụ thông báo In-app và Gửi Email qua Hangfire Worker.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given có sự kiện (Đấu giá thắng, bị bùng, bị Ban), When sinh Domain Event, Then Hangfire xử lý gửi Email và lưu Notification In-app.
 - **Lớp chạm tới**: DB (Bảng Notification) / API (Hangfire).

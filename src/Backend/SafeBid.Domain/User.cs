@@ -9,7 +9,8 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-    public string Cccd { get; set; } = string.Empty;
+    public string? Cccd { get; set; }
+    public bool EmailConfirmed { get; set; } = false;
     public int HealthScore { get; set; } = 100;
     public string BuyerTier { get; set; } = "Bronze";
     public string SellerTier { get; set; } = "Bronze";

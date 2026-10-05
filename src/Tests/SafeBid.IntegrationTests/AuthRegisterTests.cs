@@ -27,9 +27,9 @@ public class AuthRegisterTests
         {
             email = "newuser@example.com",
             password = "Password123!",
+            confirmPassword = "Password123!",
             fullName = "New User",
-            phoneNumber = "0123456789",
-            cccd = "001122334455"
+            phoneNumber = "+84123456789"
         };
 
         // Act
@@ -67,9 +67,9 @@ public class AuthRegisterTests
         {
             email = "duplicate@example.com",
             password = "Password123!",
+            confirmPassword = "Password123!",
             fullName = "Duplicate User",
-            phoneNumber = "0123456789",
-            cccd = "001122334455"
+            phoneNumber = "84123456790"
         };
         var req1 = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register");
         req1.Headers.Add("X-Forwarded-For", "192.168.1.2");
@@ -94,9 +94,9 @@ public class AuthRegisterTests
         {
             email = "spam@example.com",
             password = "Password123!",
+            confirmPassword = "Password123!",
             fullName = "Spam User",
-            phoneNumber = "0123456789",
-            cccd = "001122334455"
+            phoneNumber = "0123456791"
         };
 
         // Act & Assert

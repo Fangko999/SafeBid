@@ -6,6 +6,6 @@ namespace SafeBid.Application;
 public record RegisterCommand(
     string Email,
     string Password,
+    string ConfirmPassword,
     string FullName,
-    string PhoneNumber,
-    string Cccd) : IRequest<Result<Guid>>;
+    string PhoneNumber) : IRequest<Result<Guid>>;
