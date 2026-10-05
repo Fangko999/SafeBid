@@ -2,22 +2,18 @@
 Last updated: 2026-10-05
 
 ## Vừa làm gì
-- Hoàn thành **Task 3: Auth Login API & JWT (F1)**.
-- Thêm package `Microsoft.AspNetCore.Authentication.JwtBearer` và `System.IdentityModel.Tokens.Jwt`.
-- Implement `LoginCommand` và `LoginCommandHandler` trong Application layer.
-- Cài đặt `JwtProvider` trong Infrastructure layer sinh JWT hợp lệ.
-- Cấu hình `AddAuthentication` và `AddJwtBearer` trong `Program.cs`, thiết lập đọc Token từ Cookie (`OnMessageReceived`).
-- Viết endpoint `POST /api/auth/login` thiết lập HttpOnly Cookie (SameSite=Lax, Secure=false cho local).
-- Viết endpoint `GET /api/users/me` (UsersController) được bảo vệ bằng `[Authorize]` trả về thông tin User.
-- TDD vòng lặp RED -> GREEN (Integration Tests passed 100%).
-- Khởi tạo **Swagger** (`Swashbuckle.AspNetCore`) cho backend.
+- Hoàn thành **Task 4: Auth Login UI (F1)**.
+- Triển khai màn hình Đăng nhập (`/login`) bằng React Hook Form và Zod theo chuẩn Vibe Code V5.
+- Cài đặt thư viện `zustand` để quản lý State toàn cục ở frontend (`authStore.ts`).
+- Tạo `<AuthProvider>` bọc ngoài `layout.tsx` để tự động xác thực phiên (gọi `/api/users/me`) khi reload ứng dụng, giữ trạng thái Zustand đồng bộ với HttpOnly Cookie.
+- TDD vòng lặp RED -> GREEN (100% Passed) cho các ca: validate rỗng, đăng nhập thành công và đăng nhập sai.
 
 ## Việc dở dang
-- Không có.
+- Đã hoàn tất Phase 1 (Core & Foundation). Sắp tới là **CHECKPOINT REVIEW 2**.
 
 ## Lưu ý cho phiên sau
-- Frontend hiện đang giao tiếp với Backend qua đường dẫn Proxy `/api/...` trỏ tới `localhost:5000`. Cờ Secure của Cookie hiện đang tắt (false) để dễ test trên localhost HTTP, khi lên production HTTPS cần bật Secure.
-- Token được lưu vào Cookie `jwt`, các requests từ frontend chỉ cần dùng `fetch('/api/...', { credentials: 'omit' })` (Next.js proxy tự động gửi thông qua Browser Same-Origin) hoặc `include` nếu gọi trực tiếp.
+- Backend xử lý Auth qua JWT (HttpOnly Cookie), mọi API sau này nếu yêu cầu đăng nhập thì sử dụng attribute `[Authorize]`.
+- Ở Frontend, `useAuthStore` là single source of truth cho thông tin người dùng. Khi muốn check quyền, đọc `isAuthenticated`.
 
 ## Task tiếp theo
-- **Task 4: Auth Login UI (F1)**: Form Login và quản lý State bằng Zustand.
+- 🔍 **CHECKPOINT REVIEW 2**: Đánh giá toàn bộ luồng Auth.

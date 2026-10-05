@@ -35,7 +35,7 @@ describe('Register UI (TDD)', () => {
   })
 
   it('RED: should submit form and show success toast', async () => {
-    ;(global.fetch as any).mockResolvedValueOnce({
+    ;(global.fetch as import("vitest").Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({})
     })
@@ -60,7 +60,7 @@ describe('Register UI (TDD)', () => {
   })
 
   it('RED: should show 429 Rate Limit error toast', async () => {
-    ;(global.fetch as any).mockResolvedValueOnce({
+    ;(global.fetch as import("vitest").Mock).mockResolvedValueOnce({
       ok: false,
       status: 429,
       json: async () => ({})

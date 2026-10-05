@@ -153,7 +153,7 @@ flowchart TD
 - **Testing Steps để test tay**: Dùng browser thử login API, check tab Application > Cookies xem có cờ HttpOnly không.
 - **Phụ thuộc**: Task 1.
 
-## Task 4: Auth Login UI (F1)
+## ✅ Task 4: Auth Login UI (F1) (HOÀN THÀNH)
 - **Mục tiêu**: Form Login và quản lý State bằng Zustand.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given nhập đúng pass, When login xong, Then chuyển hướng về Trang chủ và State cập nhật.
 - **Lớp chạm tới**: UI.
