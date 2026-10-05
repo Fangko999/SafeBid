@@ -72,8 +72,35 @@ flowchart TD
 ```
 
 ## ✅ SPIKE 1: RedLock & In-Memory Resolution (HOÀN THÀNH)
+- **Mục tiêu**: Chứng minh tính khả thi của Redis RedLock để chặn Race Condition khi đấu giá mà không cần Database transaction kéo dài.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given 100 request đồng thời đập vào API, When hệ thống xử lý, Then chỉ 1 luồng được lấy Lock, đếm tăng dần chính xác không miss số nào.
+- **Lớp chạm tới**: API (Tạo Controller Test, không đụng Entity/DB thật).
+- **Endpoint | Màn hình**: `POST /api/spikes/redlock` | Không UI.
+- **File dự kiến**: `SpikeRedLockController.cs`, `RedisLockService.cs`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Request tuần tự trả về count tăng dần.
+  - Edge case 1: 100 concurrent requests -> mong đợi Redis giữ đúng lock, không bị đụng độ (race condition), count cuối = 100.
+  - Edge case 2: Task chạy quá lâu (giả lập Thread.Sleep) -> mong đợi RedLock tự động gia hạn (Extend TTL) hoặc fail an toàn.
+- **Skill / MCP gợi ý**: `doubt-driven-development`, `performance-optimization`.
+- **Rủi ro liên quan**: RISKS.md #1 (Race condition khi Bid).
+- **Testing Steps để test tay**: Chạy script K6 hoặc Bombardier gọi 100 reqs/s vào API, in kết quả số đếm.
+- **Phụ thuộc**: Không.
 
 ## ✅ SPIKE 2: HMAC-SHA256 Webhook & Idempotency (HOÀN THÀNH)
+- **Mục tiêu**: Xác thực chữ ký Payload từ Raw Body của Webhook và lưu Idempotency để chặn Replay Attack.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given payload từ Gateway, When gọi API, Then so sánh mã hash, lưu Idempotency Key vào Redis 6 phút.
+- **Lớp chạm tới**: API (Middleware/Filter).
+- **Endpoint | Màn hình**: `POST /api/spikes/webhook` | Không UI.
+- **File dự kiến**: `HmacAuthFilter.cs`, `SpikeWebhookController.cs`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Body đúng chữ ký HMAC, Timestamp hợp lệ -> HTTP 200.
+  - Edge case 1: Sửa 1 ký tự trong JSON body -> mong đợi HTTP 401 Unauthorized.
+  - Edge case 2: Gọi lại y hệt request trước đó trong vòng 6 phút -> mong đợi HTTP 200 nhưng không xử lý lại (Idempotency).
+  - Edge case 3: Timestamp trên Header quá 5 phút so với UTC -> mong đợi HTTP 401 (Replay prevention).
+- **Skill / MCP gợi ý**: `security-and-hardening`.
+- **Rủi ro liên quan**: RISKS.md #4 (Webhook giả mạo).
+- **Testing Steps để test tay**: Dùng Postman, tạo Pre-request script mã hóa SHA256 để bắn. Sau đó thử đổi body JSON mà không đổi Signature.
+- **Phụ thuộc**: Không.
 
 ---
 🔍 CHECKPOINT REVIEW 1
