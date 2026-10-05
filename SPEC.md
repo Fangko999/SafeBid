@@ -27,6 +27,7 @@ erDiagram
     USER {
         uniqueidentifier Id PK
         string Email UK
+        bool EmailConfirmed
         int HealthScore
         string BuyerTier
         string SellerTier

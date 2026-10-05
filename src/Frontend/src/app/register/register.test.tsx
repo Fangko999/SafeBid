@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import RegisterPage from './page'
 import { vi } from 'vitest'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -12,9 +13,16 @@ vi.mock('sonner', () => ({
   }
 }))
 
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+}))
+
 describe('Register UI (TDD)', () => {
+  const mockPush = vi.fn()
+
   beforeEach(() => {
     global.fetch = vi.fn()
+    ;(useRouter as import("vitest").Mock).mockReturnValue({ push: mockPush })
   })
 
   afterEach(() => {

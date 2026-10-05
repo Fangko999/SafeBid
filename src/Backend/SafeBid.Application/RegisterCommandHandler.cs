@@ -20,7 +20,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Gu
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            return Result<Guid>.Failure(DomainErrors.User.PasswordMismatch); // Simplified for this task to return our specific Error class
+            var firstError = validationResult.Errors.First();
+            return Result<Guid>.Failure(new Error("Validation.Failed", firstError.ErrorMessage));
         }
 
         if (await _context.Users.AnyAsync(u => u.Email == request.Email, cancellationToken))
@@ -29,15 +30,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Gu
         }
 
         // Phone Normalization
-        var normalizedPhone = request.PhoneNumber;
-        if (normalizedPhone.StartsWith("+84"))
-        {
-            normalizedPhone = "0" + normalizedPhone.Substring(3);
-        }
-        else if (normalizedPhone.StartsWith("84"))
-        {
-            normalizedPhone = "0" + normalizedPhone.Substring(2);
-        }
+        var normalizedPhone = User.NormalizePhoneNumber(request.PhoneNumber);
 
         if (await _context.Users.AnyAsync(u => u.PhoneNumber == normalizedPhone, cancellationToken))
         {

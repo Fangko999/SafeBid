@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,7 +14,7 @@ import { Loader2 } from "lucide-react"
 
 const registerSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu ít nhất 6 ký tự"),
+  password: z.string().min(6, "Mật khẩu ít nhất 6 ký tự").max(50, "Mật khẩu tối đa 50 ký tự"),
   confirmPassword: z.string(),
   fullName: z.string().min(2, "Họ tên quá ngắn"),
   phoneNumber: z.string().regex(/^(0|\+?84)[0-9]{9}$/, "Số điện thoại phải bắt đầu bằng 0, 84 hoặc +84 và đủ 10 số"),
@@ -26,6 +27,7 @@ type RegisterValues = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const {
     register,
@@ -55,7 +57,7 @@ export default function RegisterPage() {
 
       if (response.ok) {
         toast.success("Đăng ký thành công")
-        // Typically, you would redirect here
+        router.push("/login")
       } else if (response.status === 429) {
         toast.error("Quá nhiều yêu cầu, vui lòng thử lại sau")
       } else {

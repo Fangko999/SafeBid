@@ -9,11 +9,12 @@ Last updated: 2026-10-05
 - TDD vòng lặp RED -> GREEN (100% Passed) cho các ca: validate rỗng, đăng nhập thành công và đăng nhập sai.
 
 ## Việc dở dang
-- Đã hoàn tất Phase 1 (Core & Foundation). Sắp tới là **CHECKPOINT REVIEW 2**.
+- Đã hoàn tất hoàn toàn Phase 1 (Core & Foundation). Module Auth đã chốt (Completed).
 
 ## Lưu ý cho phiên sau
 - Backend xử lý Auth qua JWT (HttpOnly Cookie), mọi API sau này nếu yêu cầu đăng nhập thì sử dụng attribute `[Authorize]`.
 - Ở Frontend, `useAuthStore` là single source of truth cho thông tin người dùng. Khi muốn check quyền, đọc `isAuthenticated`.
+- Đã hoàn thành CHECKPOINT REVIEW 2, tag `checkpoint-2`. Các vấn đề bảo mật (Bcrypt DoS, Cookie Secure) và Validation đã được xử lý triệt để.
 
 ## Task tiếp theo
-- 🔍 **CHECKPOINT REVIEW 2**: Đánh giá toàn bộ luồng Auth.
+- **Task 5: Deposit Webhook Core (F3)**: Áp dụng SPIKE 2 vào nghiệp vụ nạp tiền thực tế.

@@ -17,4 +17,12 @@ public class User
     public int SevereViolationCount { get; set; } = 0;
     public bool IsBanned { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public static string NormalizePhoneNumber(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return phone;
+        if (phone.StartsWith("+84")) return "0" + phone.Substring(3);
+        if (phone.StartsWith("84")) return "0" + phone.Substring(2);
+        return phone;
+    }
 }

@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
 
         if (result.IsFailure)
         {
-            if (result.Error.Code == "User.DuplicateEmail" || result.Error.Code == "User.DuplicatePhone" || result.Error.Code == "User.PasswordMismatch")
+            if (result.Error.Code == "User.DuplicateEmail" || result.Error.Code == "User.DuplicatePhone" || result.Error.Code == "User.PasswordMismatch" || result.Error.Code == "Validation.Failed")
             {
                 return BadRequest(new { error = new { code = result.Error.Code, message = result.Error.Message } });
             }
@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             SameSite = SameSiteMode.Lax,
             Expires = DateTime.UtcNow.AddDays(7),
-            Secure = false // Disable Secure for localhost testing without HTTPS
+            Secure = Request.IsHttps
         };
 
         Response.Cookies.Append("jwt", result.Value, cookieOptions);
