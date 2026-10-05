@@ -2,7 +2,7 @@
 
 ```mermaid
 flowchart TD
-    S1[SPIKE 1: RedLock In-Memory] --> S2[SPIKE 2: HMAC Webhook]
+    S1[~~SPIKE 1: RedLock In-Memory~~] --> S2[~~SPIKE 2: HMAC Webhook~~]
     S2 -.-> CP1((🔍 CHECKPOINT 1))
     
     CP1 --> T1[Task 1: Auth Register API]
@@ -63,42 +63,17 @@ flowchart TD
     T33 -.-> CP9((🔍 CHECKPOINT 9))
     
     CP9 --> T34[Task 34: Privacy Data Masking API]
-    T34 --> T35[Task 35: Admin Ban & Mutual Ban]
-    T35 --> T36[Task 36: Admin Sweep Cascade API]
-    T36 --> T37[Task 37: Admin Dashboard UI]
-    T37 --> T38[Task 38: Notifications & Hangfire Emails]
+    T34 --> T35[Task 35: Reputation Engine - Dual-Tier]
+    T35 --> T36[Task 36: Auto-Ban Worker]
+    T36 --> T37[Task 37: Admin Ban & Mutual Ban]
+    T37 --> T38[Task 38: Admin Sweep Cascade API]
+    T38 --> T39[Task 39: Admin Dashboard UI]
+    T39 --> T40[Task 40: Notifications & Hangfire Emails]
 ```
 
-## SPIKE 1: RedLock & In-Memory Resolution
-- **Mục tiêu**: Chứng minh tính khả thi của Redis RedLock để chặn Race Condition khi đấu giá mà không cần Database transaction kéo dài.
-- **Tiêu chí hoàn thành (Given/When/Then)**: Given 100 request đồng thời đập vào API, When hệ thống xử lý, Then chỉ 1 luồng được lấy Lock, đếm tăng dần chính xác không miss số nào.
-- **Lớp chạm tới**: API (Tạo Controller Test, không đụng Entity/DB thật).
-- **Endpoint | Màn hình**: `POST /api/spikes/redlock` | Không UI.
-- **File dự kiến**: `SpikeRedLockController.cs`, `RedisLockService.cs`.
-- **Test (Bắt buộc TDD)**: 
-  - Ca bình thường: Request tuần tự trả về count tăng dần.
-  - Edge case 1: 100 concurrent requests -> mong đợi Redis giữ đúng lock, không bị đụng độ (race condition), count cuối = 100.
-  - Edge case 2: Task chạy quá lâu (giả lập Thread.Sleep) -> mong đợi RedLock tự động gia hạn (Extend TTL) hoặc fail an toàn.
-- **Skill / MCP gợi ý**: `doubt-driven-development`, `performance-optimization`.
-- **Rủi ro liên quan**: RISKS.md #1 (Race condition khi Bid).
-- **Testing Steps để test tay**: Chạy script K6 hoặc Bombardier gọi 100 reqs/s vào API, in kết quả số đếm.
-- **Phụ thuộc**: Không.
+## ~~SPIKE 1: RedLock & In-Memory Resolution~~ (HOÀN THÀNH)
 
-## SPIKE 2: HMAC-SHA256 Webhook & Idempotency
-- **Mục tiêu**: Xác thực chữ ký Payload từ Raw Body của Webhook và lưu Idempotency để chặn Replay Attack.
-- **Tiêu chí hoàn thành (Given/When/Then)**: Given payload từ Gateway, When gọi API, Then so sánh mã hash, lưu Idempotency Key vào Redis 6 phút.
-- **Lớp chạm tới**: API (Middleware/Filter).
-- **Endpoint | Màn hình**: `POST /api/spikes/webhook` | Không UI.
-- **File dự kiến**: `HmacAuthFilter.cs`, `SpikeWebhookController.cs`.
-- **Test (Bắt buộc TDD)**: 
-  - Ca bình thường: Body đúng chữ ký HMAC, Timestamp hợp lệ -> HTTP 200.
-  - Edge case 1: Sửa 1 ký tự trong JSON body -> mong đợi HTTP 401 Unauthorized.
-  - Edge case 2: Gọi lại y hệt request trước đó trong vòng 6 phút -> mong đợi HTTP 200 nhưng không xử lý lại (Idempotency).
-  - Edge case 3: Timestamp trên Header quá 5 phút so với UTC -> mong đợi HTTP 401 (Replay prevention).
-- **Skill / MCP gợi ý**: `security-and-hardening`.
-- **Rủi ro liên quan**: RISKS.md #4 (Webhook giả mạo).
-- **Testing Steps để test tay**: Dùng Postman, tạo Pre-request script mã hóa SHA256 để bắn. Sau đó thử đổi body JSON mà không đổi Signature.
-- **Phụ thuộc**: Không.
+## ~~SPIKE 2: HMAC-SHA256 Webhook & Idempotency~~ (HOÀN THÀNH)
 
 ---
 🔍 CHECKPOINT REVIEW 1
@@ -618,8 +593,36 @@ flowchart TD
 - **Testing Steps để test tay**: Dùng postman gọi API xem Order đã hoàn thành, kiểm tra SĐT có bị che không.
 - **Phụ thuộc**: Task 27, 33.
 
-## Task 35: Admin Ban & Mutual Ban (F10)
-- **Mục tiêu**: Khóa User và chặn giao dịch mới lập tức. Xử lý tịch thu kép.
+## Task 35: Reputation Engine - Dual-Tier & Penalty (F2, F10)
+- **Mục tiêu**: Tính toán thăng/giáng hạng Dual-Tier và cơ chế trừ điểm.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given đơn hàng thành công, When hoàn tất, Then đánh giá lại Tier dựa trên TotalSpent/SalesCount. Given vi phạm (bùng đơn, hàng lỗi), Then trừ HealthScore và giới hạn Min=0, Max=100.
+- **Lớp chạm tới**: DB / API (Domain Event Handlers).
+- **Endpoint | Màn hình**: Chạy ngầm khi Order kết thúc.
+- **File dự kiến**: `ReputationEngineService.cs`, `OrderCompletedEventHandler.cs`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: Buyer tiêu đủ 50 triệu -> Thăng hạng Gold.
+  - Edge case 1: Trừ điểm HealthScore từ 10 trừ đi 20 -> mong đợi kết quả = 0 (Không bị âm).
+- **Skill / MCP gợi ý**: `test-driven-development`.
+- **Rủi ro liên quan**: Không.
+- **Testing Steps để test tay**: Cố tình bùng đơn -> check HealthScore giảm.
+- **Phụ thuộc**: Task 22, 30.
+
+## Task 36: Auto-Ban Worker (F10)
+- **Mục tiêu**: Quét và khóa tài khoản tự động khi uy tín cạn kiệt.
+- **Tiêu chí hoàn thành (Given/When/Then)**: Given User có HealthScore=0 hoặc SevereViolation>=3, When Job chạy, Then kích hoạt Ban tự động.
+- **Lớp chạm tới**: API (Hangfire Worker).
+- **Endpoint | Màn hình**: Background Job.
+- **File dự kiến**: `AutoBanWorker.cs`.
+- **Test (Bắt buộc TDD)**: 
+  - Ca bình thường: HealthScore=0 -> Tự động đánh dấu IsBanned=true và trigger Cascade Sweep.
+  - Edge case 1: HealthScore=5 nhưng SevereViolation=3 -> mong đợi Auto Ban.
+- **Skill / MCP gợi ý**: `ci-cd-and-automation`.
+- **Rủi ro liên quan**: Ban nhầm do lỗi dữ liệu.
+- **Testing Steps để test tay**: Đẩy HealthScore của user về 0, trigger Hangfire Job, check user xem bị khóa chưa.
+- **Phụ thuộc**: Task 35.
+
+## Task 37: Admin Ban & Mutual Ban (F10)
+- **Mục tiêu**: Khóa User thủ công từ Admin. Xử lý tịch thu kép.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Admin Ban User, Then IsBanned=true, Wallet IsConfiscated=true. Given CẢ HAI Buyer/Seller bị Ban (Mutual Ban), Then tịch thu kép 100% dòng tiền Escrow vào Quỹ bảo hiểm.
 - **Lớp chạm tới**: DB / API.
 - **Endpoint | Màn hình**: `POST /api/admin/users/{id}/ban` | Không UI.
@@ -632,7 +635,7 @@ flowchart TD
 - **Testing Steps để test tay**: Tạo Order, Ban Buyer -> Ban Seller -> Check System_Insurance_Fund tăng bằng đúng giá trị Order.
 - **Phụ thuộc**: Task 6, 20.
 
-## Task 36: Admin Sweep Cascade API (F10)
+## Task 38: Admin Sweep Cascade API (F10)
 - **Mục tiêu**: Hủy toàn bộ giao dịch PENDING và quét tiền vào Quỹ hệ thống (Confiscation Sweep).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given User bị Ban đơn lẻ, When quét, Then mọi yêu cầu Rút tiền bị hủy, tiền ví bị trừ về 0, chuyển sang System_Insurance_Fund. Đơn hàng xử lý Compensating action.
 - **Lớp chạm tới**: DB / API (Saga / Domain Event).
@@ -644,9 +647,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `doubt-driven-development`.
 - **Rủi ro liên quan**: RISKS.md #6 (Tẩu tán tài sản race condition).
 - **Testing Steps để test tay**: Tạo lệnh rút tiền, Admin ban user, check ví thấy = 0, lệnh rút tiền bị hủy.
-- **Phụ thuộc**: Task 35.
+- **Phụ thuộc**: Task 37.
 
-## Task 37: Admin Dashboard UI (F10)
+## Task 39: Admin Dashboard UI (F10)
 - **Mục tiêu**: Bảng điều khiển Admin để Quản lý User & Ban.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Admin login, When xem list, Then có nút Ban đỏ rực, bấm Ban hiện Modal cảnh báo tịch thu tài sản.
 - **Lớp chạm tới**: UI.
@@ -657,9 +660,9 @@ flowchart TD
 - **Skill / MCP gợi ý**: `frontend-ui-engineering`.
 - **Rủi ro liên quan**: Lộ URL Admin cho User thường.
 - **Testing Steps để test tay**: Vào bằng user thường xem có bị 403 không.
-- **Phụ thuộc**: Task 36.
+- **Phụ thuộc**: Task 38.
 
-## Task 38: Notifications & Hangfire Emails
+## Task 40: Notifications & Hangfire Emails
 - **Mục tiêu**: Dịch vụ thông báo In-app và Gửi Email qua Hangfire Worker.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given có sự kiện (Đấu giá thắng, bị bùng, bị Ban), When sinh Domain Event, Then Hangfire xử lý gửi Email và lưu Notification In-app.
 - **Lớp chạm tới**: DB (Bảng Notification) / API (Hangfire).
@@ -667,7 +670,7 @@ flowchart TD
 - **File dự kiến**: `NotificationWorker.cs`, `EmailService.cs`, `NotificationBadge.tsx`.
 - **Test (Bắt buộc TDD)**: 
   - Ca bình thường: Đấu giá thành công -> Email báo thắng được queue vào Hangfire.
-  - Edge case 1: Email Server (SMTP) bị lỗi (timeout) -> mong đợi Hangfire tự động Retry (Max 5 lần, Exponential Backoff).
+  - Edge case 1: Email Server (SMTP) bị lỗi (timeout) -> mong đợi Hangfire tự tự động Retry (Max 5 lần, Exponential Backoff).
 - **Skill / MCP gợi ý**: `ci-cd-and-automation`.
 - **Rủi ro liên quan**: Spam email gây block IP SMTP.
 - **Testing Steps để test tay**: Trigger 1 event thắng giải, vào Hangfire Dashboard (port 5000) xem Job gửi mail có Success không.
