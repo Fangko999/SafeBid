@@ -48,6 +48,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CategoryNode'
+
+    CreateAuctionRequest:
+      type: object
+      required:
+        - title
+        - categoryId
+        - startPrice
+        - stepPrice
+        - startTime
+        - endTime
+      properties:
+        title: { type: string }
+        categoryId: { type: string, format: uuid }
+        startPrice: { type: number, format: double }
+        stepPrice: { type: number, format: double }
+        reservePrice: { type: number, format: double, nullable: true }
+        buyNowPrice: { type: number, format: double, nullable: true }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+        mediaUrls: 
+          type: array
+          items: { type: string }
 paths:
   # Spikes
   /spikes/redlock:
@@ -433,6 +455,30 @@ paths:
                   url: { type: string }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # Auctions
+  /auctions:
+    post:
+      summary: Create an auction draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuctionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': 
+          description: Forbidden - Seller health score too low
 
   # Categories
   /categories:

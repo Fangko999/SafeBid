@@ -1,17 +1,17 @@
 # GHI NHỚ NGỮ CẢNH (MEMORY)
 
 ## 1. Vừa làm gì?
-- Hoàn thành **Task 9 (Multi-Media & Category API)**: Thiết kế API GetCategories dạng cây đệ quy và cấu hình Entity cho `Category` và `AuctionMedia`.
-- Khởi tạo Domain logic `Category.SetParent` chặn circular reference (vòng lặp).
-- Áp dụng kỹ thuật lấy dữ liệu phẳng từ DB và map in-memory sang cấu trúc Tree để chống N+1 queries. Tắt cascade delete qua `DeleteBehavior.Restrict`.
+- Hoàn thành **Task 10 (Auction Draft UI)**: Xây dựng form UI Next.js tạo nháp Phiên đấu giá.
+- Tích hợp **Zod** để validate phía Frontend.
+- Tạo API `POST /api/auctions` và Domain logic (`Auction.CreateDraft`) với bộ quy tắc chặt chẽ: kiểm tra ngày tháng, logic giá (Reserve/BuyNow > StartPrice), và chặn tài khoản có `HealthScore < 60`.
+- Hoàn tất test Integration Backend và Frontend.
 
 ## 2. Việc dở dang
-- Không có. Môi trường 100% XANH, TDD chạy ổn định 27 test cases.
+- Không có. Môi trường 100% XANH, TDD chạy ổn định 31 test cases (Backend).
 
 ## 3. Lưu ý cho phiên sau
-- Đối với bảng `AuctionMedia`, chỉ mới tạo Entity nhưng chưa tạo API CRUD. Sẽ được xử lý kết hợp ở thao tác Publish Auction hoặc Create Draft Auction ở các task sau.
-- Cấu trúc cây Category đã hoàn thiện ở API, bên Frontend khi consume nhớ dùng component đệ quy hoặc flat list to tree library (nếu có form dropdown).
+- Form hiện tại gọi API `POST /api/auctions` thành công. Phải tiếp tục hoàn thiện logic thao tác trạng thái qua lệnh **Publish Auction** ở task tiếp theo (sẽ trừ phí).
 
 ## 4. Task tiếp theo
-- **Task 10: Auction Draft UI (F4)**
-- Xây dựng form lưu nháp phiên đấu giá, có giao diện kéo thả nhiều ảnh/video và chọn Category.
+- **Task 11: Auction Publish API (F4)**
+- Xuất bản Phiên, tính toán và trừ phí lên sàn từ ví người dùng, chuyển đổi file media và trạng thái.

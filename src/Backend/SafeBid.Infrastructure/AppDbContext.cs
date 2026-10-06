@@ -16,6 +16,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<WithdrawalRequest> WithdrawalRequests => Set<WithdrawalRequest>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<AuctionMedia> AuctionMedia => Set<AuctionMedia>();
+    public DbSet<Auction> Auctions => Set<Auction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +61,18 @@ public class AppDbContext : DbContext, IAppDbContext
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.AuctionId);
+            entity.HasOne<Auction>().WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Auction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RowVersion).IsRowVersion();
+            entity.Property(e => e.StartPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.StepPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.ReservePrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.BuyNowPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.CurrentPrice).HasColumnType("decimal(18,2)");
         });
     }
 }

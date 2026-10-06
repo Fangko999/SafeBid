@@ -11,5 +11,6 @@ public interface IAppDbContext
     DbSet<WithdrawalRequest> WithdrawalRequests { get; }
     DbSet<Category> Categories { get; }
     DbSet<AuctionMedia> AuctionMedia { get; }
+    DbSet<Auction> Auctions { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

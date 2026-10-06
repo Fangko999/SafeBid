@@ -246,7 +246,7 @@ flowchart TD
 - **Testing Steps để test tay**: Dùng Postman lấy list Category xem có ra dạng Cây không.
 - **Phụ thuộc**: Task 8.
 
-## Task 10: Auction Draft UI (F4)
+## ✅ Task 10: Auction Draft UI (F4) (HOÀN THÀNH)
 - **Mục tiêu**: Form tạo nháp Phiên Đấu Giá, cho phép chọn Category đa cấp và up nhiều ảnh.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Seller điền tên, giá, chọn Category, up 3 ảnh, When bấm Lưu Nháp, Then gọi API tạo Auction trạng thái DRAFT với danh sách media tương ứng.
 - **Lớp chạm tới**: DB (Bảng Auction) / API / UI.
