@@ -185,7 +185,7 @@ flowchart TD
 - **Testing Steps để test tay**: Bắn webhook chuẩn, check DB xem có tiền không. Bắn webhook khi User bị Ban.
 - **Phụ thuộc**: SPIKE 2, Task 3.
 
-## Task 6: Wallet Concurrency API (F3)
+## ✅ Task 6: Wallet Concurrency API (F3) (HOÀN THÀNH)
 - **Mục tiêu**: Quản lý số dư và ngăn trừ lố bằng RowVersion.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given rút tiền, When số dư đủ, Then trừ tiền (ghi nhận Hold amount nếu là đấu giá), nếu có 2 req chạm nhau thì văng DbUpdateConcurrencyException.
 - **Lớp chạm tới**: DB (Bảng Wallet thêm RowVersion) / API.
