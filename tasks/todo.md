@@ -274,7 +274,7 @@ flowchart TD
 - **Testing Steps để test tay**: API call publish khi ví chỉ có 10k -> lỗi. Bơm ví lên 50k -> thành công.
 - **Phụ thuộc**: Task 6, Task 10.
 
-## Task 12: Auction List & Details UI (F4)
+## ✅ Task 12: Auction List & Details UI (F4) (HOÀN THÀNH)
 - **Mục tiêu**: Hiển thị danh sách và chi tiết các phiên ACTIVE, Carousel cho nhiều ảnh.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given vào trang chủ, When load, Then thấy list ACTIVE auctions. Vào chi tiết xem được Carousel ảnh và Category.
 - **Lớp chạm tới**: API / UI.

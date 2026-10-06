@@ -40,7 +40,7 @@ export default function CreateAuctionPage() {
     const files = Array.from(e.target.files);
     
     // Upload each file
-    const urls = [];
+    const urls: string[] = [];
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);

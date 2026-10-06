@@ -9,7 +9,6 @@ namespace SafeBid.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class AuctionsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -20,6 +19,7 @@ public class AuctionsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateDraft([FromBody] CreateAuctionRequest request, CancellationToken ct)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -40,6 +40,7 @@ public class AuctionsController : ControllerBase
     }
 
     [HttpPost("{id}/publish")]
+    [Authorize]
     public async Task<IActionResult> Publish(Guid id, CancellationToken ct)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -56,6 +57,23 @@ public class AuctionsController : ControllerBase
             return StatusCode(403, new { Error = result.Error.Message });
             
         return BadRequest(new { Error = result.Error.Message });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAuctions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        var query = new GetAuctionsQuery(pageNumber, pageSize);
+        var result = await _mediator.Send(query);
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetAuctionById(Guid id)
+    {
+        var query = new GetAuctionByIdQuery(id);
+        var result = await _mediator.Send(query);
+        if (!result.IsSuccess) return NotFound(new { Error = result.Error.Message });
+        return Ok(result.Value);
     }
 }
 

@@ -18,4 +18,14 @@ public class PaginatedResult<T>
         HasNext = CurrentPage < TotalPages;
         Items = items;
     }
+
+    [JsonConstructor]
+    public PaginatedResult(int totalCount, int totalPages, int currentPage, bool hasNext, IReadOnlyList<T> items)
+    {
+        TotalCount = totalCount;
+        TotalPages = totalPages;
+        CurrentPage = currentPage;
+        HasNext = hasNext;
+        Items = items;
+    }
 }

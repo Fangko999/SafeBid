@@ -1,22 +1,22 @@
 # GHI NHỚ NGỮ CẢNH (MEMORY)
 
 ## 1. Vừa làm gì?
-- Hoàn thành **Task 11 (Auction Publish API)**: Xây dựng API `POST /api/auctions/{id}/publish`.
-- Tính phí Listing Fee = `Max(20000, 2% của giá cơ sở)`.
-- Áp dụng `IDbContextTransaction` để đảm bảo tính toàn vẹn phân tán (Distributed Transaction) giữa:
-  1. Trừ tiền `Wallet` và sinh `LedgerEntry`.
-  2. Cập nhật `Auction.Status` thành ACTIVE.
-  3. Dời các file từ MinIO bucket `temp-media` sang `auction-media` (`IStorageService.MoveFilesToPublicAsync`).
-  - Nếu bước 3 lỗi mạng, transaction tự động Rollback, user không mất tiền.
-- Đã sửa cấu hình `HasOne` của `AuctionMedia` trong `AppDbContext` để `Include` hoạt động đúng.
-- Đã chạy thành công 100% xanh cho TDD test (bao gồm Unauthorized và Insufficient Funds).
+- Hoàn thành **Task 12 (Auction List & Details UI)**: Xây dựng UI danh sách và chi tiết các phiên đấu giá.
+- Thêm `GetAuctionsQuery` và `GetAuctionByIdQuery` với `.Select()` projection để chuyển đổi GUID sang Tên thật (SellerName, CategoryName) và chỉ lấy URL ảnh chính để tối ưu hiệu năng.
+- Chỉnh sửa `PaginatedResult.cs` thêm `[JsonConstructor]` để thân thiện hơn với C# `JsonSerializer` trong Integration Tests.
+- Code UI trên Next.js sử dụng Tailwind CSS:
+  - `AuctionCard.tsx`: Card kính mờ với viền hover.
+  - `AuctionCarousel.tsx`: Slider hiển thị đa ảnh cho phiên đấu giá.
+  - Xử lý mượt 4 state UI: Loading (Skeleton), Empty, Error, Success.
+- Đã cấu trúc lại và chạy EF Core Database Update thành công để đồng bộ schema DB.
 
 ## 2. Việc dở dang
-- Không có. Môi trường xanh 100%. Frontend linter cũng đã dọn sạch các cảnh báo về `useEffect`.
+- Không có. Môi trường xanh 100%. Linter sạch. Các test pass.
 
 ## 3. Lưu ý cho phiên sau
-- Ở `Task 12`, ta sẽ làm UI cho list Auction và chi tiết Auction. Cần render Carousel hiển thị nhiều ảnh thông qua `AuctionMedia`.
+- Ở `Task 13`, ta sẽ xây dựng chức năng Watchlist (Theo dõi phiên) và Bid History (Lịch sử giá công khai).
+- Lưu ý ẩn danh một phần tên người dùng hoặc SĐT trong danh sách lịch sử đấu giá để đảm bảo Privacy.
 
 ## 4. Task tiếp theo
-- **Task 12: Auction List & Details UI (F4)**
-- Xây dựng UI hiển thị danh sách phiên ACTIVE và trang chi tiết phiên.
+- **Task 13: Auction Watchlist & Bid History (F4, Engagement)**
+- Tính năng theo dõi phiên và xem danh sách lịch sử giá được giấu kín một phần thông tin cá nhân.
