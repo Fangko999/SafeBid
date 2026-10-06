@@ -218,7 +218,7 @@ flowchart TD
 🔍 CHECKPOINT REVIEW 3
 ---
 
-## Task 8: Auction MinIO API (F4)
+## ✅ Task 8: Auction MinIO API (F4) (HOÀN THÀNH)
 - **Mục tiêu**: API upload file bằng chứng (Bucket temp).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given file ảnh hợp lệ, When upload, Then đẩy lên MinIO và trả về URL.
 - **Lớp chạm tới**: API (MinIO Client).

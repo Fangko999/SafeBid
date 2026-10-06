@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Testcontainers.MsSql;
+using Testcontainers.Minio;
 using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -20,16 +21,25 @@ public class ApiTestFixture : WebApplicationFactory<Program>, IAsyncLifetime
         .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
         .Build();
 
+    private readonly MinioContainer _minioContainer = new MinioBuilder()
+        .WithImage("elestio/minio:latest")
+        .WithUsername("admin")
+        .WithPassword("password123")
+        .Build();
+
     public async Task InitializeAsync()
     {
-        await Task.WhenAll(_redisContainer.StartAsync(), _dbContainer.StartAsync());
+        await Task.WhenAll(_redisContainer.StartAsync(), _dbContainer.StartAsync(), _minioContainer.StartAsync());
         Environment.SetEnvironmentVariable("REDIS_CONNECTION", $"{_redisContainer.Hostname}:{_redisContainer.GetMappedPublicPort(6379)}");
         Environment.SetEnvironmentVariable("DB_CONNECTION_STRING", _dbContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable("MINIO_ENDPOINT", $"{_minioContainer.Hostname}:{_minioContainer.GetMappedPublicPort(9000)}");
+        Environment.SetEnvironmentVariable("MINIO_ACCESS_KEY", "admin");
+        Environment.SetEnvironmentVariable("MINIO_SECRET_KEY", "password123");
     }
 
     public new async Task DisposeAsync()
     {
-        await Task.WhenAll(_redisContainer.DisposeAsync().AsTask(), _dbContainer.DisposeAsync().AsTask());
+        await Task.WhenAll(_redisContainer.DisposeAsync().AsTask(), _dbContainer.DisposeAsync().AsTask(), _minioContainer.DisposeAsync().AsTask());
     }
 }
 

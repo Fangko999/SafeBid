@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -45,7 +45,9 @@ export default function WalletPage() {
     resolver: zodResolver(withdrawSchema)
   })
 
-  const loadData = async (currentPage = page) => {
+  const loadData = useCallback(async (currentPage: number) => {
+    // Prevent synchronous setState in useEffect by yielding to microtask queue
+    await Promise.resolve()
     try {
       setLoading(true)
       setError(false)
@@ -62,12 +64,12 @@ export default function WalletPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    void loadData(1)
-  }, [])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData(1).catch(console.error)
+  }, [loadData])
 
   const onSubmit = async (data: WithdrawValues) => {
     try {

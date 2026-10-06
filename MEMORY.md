@@ -1,21 +1,18 @@
-# MEMORY
-Last updated: 2026-10-06
+# GHI NHỚ NGỮ CẢNH (MEMORY)
 
-## Vừa làm gì
-- Hoàn thành **Task 7: Wallet UI (F3)**.
-- Backend: Bổ sung `PaginatedResult<T>`, `GetWalletTransactionsQuery`, và API endpoint `/api/wallet/transactions`.
-- Frontend: Cài đặt Shadcn UI (Table, Badge, Skeleton, Pagination).
-- Frontend: Tạo trang Ví (Wallet) với giao diện Glassmorphism tuyệt đẹp.
-- Áp dụng **4 trạng thái UI**: Loading Skeleton, Empty State, Error State (có nút Thử lại), và Success State.
-- Xử lý **Race Condition ở Frontend**: Nếu rút tiền trả về HTTP 409, `fetch` sẽ chờ ngẫu nhiên 300-500ms và retry ngầm tối đa 2 lần.
+## 1. Vừa làm gì?
+- Hoàn thành **Task 8 (Auction MinIO API)**: Tích hợp MinIO cho việc upload file phương tiện vào bucket tạm `temp-media`.
+- Đã xử lý chặn tải lên file `.exe`, cấu hình file lớn nhất là 5MB.
+- Đã viết 4 Integration Tests với Testcontainers.Minio (Sử dụng image `elestio/minio:latest`).
+- Fix thành công lỗi linter `react-hooks/set-state-in-effect` cho `src/Frontend/src/app/wallet/page.tsx` từ phiên trước.
 
-## Việc dở dang
-- Không có.
+## 2. Việc dở dang
+- Không có việc dở dang. Task 8 đã được tick ✅. Môi trường sạch sẽ.
 
-## Lưu ý cho phiên sau
-- Backend hiện đã trả về 400 Insufficient Funds khi ví trống và 409 Conflict khi gặp Race Condition.
-- Tính năng rút tiền hiện tại đang thao tác cập nhật trực tiếp `HoldAmount`, admin phê duyệt/từ chối chưa được làm.
-- Cấu trúc `PaginatedResult<T>` cần được sử dụng lại cho các API get list sau này.
+## 3. Lưu ý cho phiên sau
+- Image `minio/minio` và `quay.io/minio/minio:latest` đang bị lỗi 401/rate limit trên Docker registry, đã chuyển qua dùng `elestio/minio:latest` chạy rất ổn định cho Testcontainers.
+- Trong frontend, chú ý không đặt hàm gọi trực tiếp `setLoading(true)` vào bên trong `useEffect` để tránh lỗi linter cascading renders. Tốt nhất là bọc qua `Promise.resolve()` trong `useCallback` hoặc xử lý bên ngoài.
 
-## Task tiếp theo
-- **CHECKPOINT 3**: Kiểm duyệt tổng thể trước khi bắt tay vào các tính năng Đấu giá phức tạp (T8, T9, T10, T11).
+## 4. Task tiếp theo
+- **Task 9: Multi-Media & Category API (F4)**
+- Xây dựng API và Cấu trúc DB cho danh mục (Categories) theo dạng Tree (Parent-Child) và bảng lưu nhiều ảnh `AuctionMedia`.

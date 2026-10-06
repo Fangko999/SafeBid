@@ -8,7 +8,8 @@ using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
 using SafeBid.Infrastructure;
 using SafeBid.Api.Services;
-
+using Minio;
+using SafeBid.Application;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
@@ -103,6 +104,18 @@ builder.Services.AddSingleton<IDistributedLockFactory>(sp =>
 );
 builder.Services.AddSingleton<RedisLockService>();
 builder.Services.AddScoped<SafeBid.Api.Filters.HmacAuthFilter>();
+
+var minioEndpoint = Environment.GetEnvironmentVariable("MINIO_ENDPOINT") ?? builder.Configuration["MINIO_ENDPOINT"] ?? "localhost:9000";
+var minioAccessKey = Environment.GetEnvironmentVariable("MINIO_ACCESS_KEY") ?? builder.Configuration["MINIO_ACCESS_KEY"] ?? "admin";
+var minioSecretKey = Environment.GetEnvironmentVariable("MINIO_SECRET_KEY") ?? builder.Configuration["MINIO_SECRET_KEY"] ?? "password123";
+
+builder.Services.AddMinio(configureClient => configureClient
+    .WithEndpoint(minioEndpoint)
+    .WithCredentials(minioAccessKey, minioSecretKey)
+    .WithSSL(false)
+    .Build());
+
+builder.Services.AddScoped<SafeBid.Application.IStorageService, SafeBid.Infrastructure.MinioService>();
 
 var app = builder.Build();
 
