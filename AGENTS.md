@@ -19,3 +19,5 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **Frontend TDD (Vitest + JSDOM + UserEvent):** `src/Frontend/src/app/register/register.test.tsx`
 - **Integration Test (Concurrency/Race Condition):** `src/Tests/SafeBid.IntegrationTests/WalletWithdrawTests.cs`
 - **Script giả lập luồng song song (PowerShell + C#):** `scripts/test-concurrency.ps1`
+- **Backend Pagination Pattern (Result & Handler):** `src/Backend/SafeBid.Application/PaginatedResult.cs`
+- **Frontend Page Component (Glassmorphism & 4 States):** `src/Frontend/src/app/wallet/page.tsx`
