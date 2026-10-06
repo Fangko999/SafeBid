@@ -19,6 +19,8 @@ public class Auction
     public AuctionStatus Status { get; private set; }
     public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 
+    public ICollection<AuctionMedia> Media { get; private set; } = new List<AuctionMedia>();
+
     private Auction() { }
 
     public static Result<Auction> CreateDraft(
@@ -53,5 +55,18 @@ public class Auction
             EndTime = endTime,
             Status = AuctionStatus.Draft
         });
+    }
+
+    public Result<decimal> Publish()
+    {
+        if (Status != AuctionStatus.Draft)
+            return Result<decimal>.Failure(new Error("Auction.InvalidState", "Only draft auctions can be published"));
+
+        Status = AuctionStatus.Active;
+        
+        var basePrice = ReservePrice ?? StartPrice;
+        var fee = Math.Max(20000m, basePrice * 0.02m);
+        
+        return Result<decimal>.Success(fee);
     }
 }

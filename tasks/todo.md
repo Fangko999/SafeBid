@@ -260,7 +260,7 @@ flowchart TD
 - **Testing Steps để test tay**: Điền form, up 3 ảnh, chọn danh mục con, bấm lưu nháp.
 - **Phụ thuộc**: Task 9.
 
-## Task 11: Auction Publish API (F4)
+## ✅ Task 11: Auction Publish API (F4) (HOÀN THÀNH)
 - **Mục tiêu**: Xuất bản Phiên, trừ Phí lên sàn.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given Auction DRAFT, When Publish, Then trừ phí `Max(20k, 2% ReservePrice)` từ Wallet, chuyển nhiều file sang public, status ACTIVE.
 - **Lớp chạm tới**: DB (Transaction liên bảng) / API.

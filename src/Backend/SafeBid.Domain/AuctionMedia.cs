@@ -21,4 +21,9 @@ public class AuctionMedia
             SortOrder = sortOrder
         };
     }
+
+    public void UpdateUrl(string url)
+    {
+        MediaUrl = url;
+    }
 }

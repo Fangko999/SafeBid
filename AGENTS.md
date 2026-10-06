@@ -20,5 +20,6 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **Integration Test (Concurrency/Race Condition):** `src/Tests/SafeBid.IntegrationTests/WalletWithdrawTests.cs`
 - **Script giả lập luồng song song (PowerShell + C#):** `scripts/test-concurrency.ps1`
 - **Backend Pagination Pattern (Result & Handler):** `src/Backend/SafeBid.Application/PaginatedResult.cs`
+- **Application Logic (Distributed Transaction with EF Core and External Service):** `src/Backend/SafeBid.Application/PublishAuctionCommand.cs`
 - **Frontend Page Component (Glassmorphism & 4 States):** `src/Frontend/src/app/wallet/page.tsx`
 - **Frontend Complex Form (React Hook Form + Zod + API Integration):** `src/Frontend/src/app/auctions/create/page.tsx`

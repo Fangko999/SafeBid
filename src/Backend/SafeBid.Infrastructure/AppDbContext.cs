@@ -61,7 +61,7 @@ public class AppDbContext : DbContext, IAppDbContext
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.AuctionId);
-            entity.HasOne<Auction>().WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<Auction>().WithMany(a => a.Media).HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Auction>(entity =>

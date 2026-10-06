@@ -28,8 +28,11 @@ export default function CreateAuctionPage() {
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    // Mock fetch categories
-    setCategories([{ id: 'cat-1', name: 'Electronics' }]);
+    const fetchCategories = async () => {
+      // Mock fetch categories
+      setCategories([{ id: 'cat-1', name: 'Electronics' }]);
+    };
+    fetchCategories();
   }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

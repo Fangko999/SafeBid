@@ -38,6 +38,25 @@ public class AuctionsController : ControllerBase
 
         return BadRequest(new { Error = result.Error.Message });
     }
+
+    [HttpPost("{id}/publish")]
+    public async Task<IActionResult> Publish(Guid id, CancellationToken ct)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var sellerId))
+            return Unauthorized();
+
+        var command = new PublishAuctionCommand(id, sellerId);
+        var result = await _mediator.Send(command, ct);
+        
+        if (result.IsSuccess)
+            return Ok();
+
+        if (result.Error.Code == "Auction.Unauthorized")
+            return StatusCode(403, new { Error = result.Error.Message });
+            
+        return BadRequest(new { Error = result.Error.Message });
+    }
 }
 
 public record CreateAuctionRequest(
