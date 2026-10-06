@@ -24,7 +24,7 @@ flowchart TD
     T10 --> T11[Task 11: Auction Publish API]
     T11 --> T12[Task 12: Auction List & Details UI]
     T12 --> T13[Task 13: Auction Watchlist & Bid History]
-    T13 --> T14[Task 14: Auction Q&A]
+    T13 --> T14[✅ Task 14: Auction Q&A]
     
     T14 -.-> CP4((🔍 CHECKPOINT 4))
     
@@ -302,7 +302,7 @@ flowchart TD
 - **Testing Steps để test tay**: Bấm theo dõi phiên, kiểm tra lịch sử giá xem danh tính có bị lộ không.
 - **Phụ thuộc**: Task 12.
 
-## Task 14: Auction Q&A (Engagement)
+## ✅ Task 14: Auction Q&A (Engagement) (HOÀN THÀNH)
 - **Mục tiêu**: Hỏi đáp công khai trên Phiên đấu giá.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given User đặt câu hỏi, Then Seller nhận được thông báo để trả lời. Question & Answer hiện công khai trên trang chi tiết.
 - **Lớp chạm tới**: DB (Bảng Q&A) / API / UI.

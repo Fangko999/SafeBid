@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { AuctionCarousel } from '@/components/auctions/AuctionCarousel';
+import { QnAPanel } from '@/components/auctions/QnAPanel';
+import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
 
 interface AuctionDetail {
@@ -17,6 +19,7 @@ interface AuctionDetail {
   status: string;
   categoryName: string;
   sellerName: string;
+  sellerId: string;
   mediaUrls: string[];
 }
 
@@ -27,6 +30,7 @@ export default function AuctionDetailPage() {
   const [auction, setAuction] = useState<AuctionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, user } = useAuthStore();
 
   useEffect(() => {
     if (!id) return;
@@ -133,6 +137,15 @@ export default function AuctionDetailPage() {
             {/* Future Bid Action Area */}
             <div className="mt-8 p-4 border border-slate-700 border-dashed rounded-xl text-center text-slate-500">
               [Vùng đặt giá sẽ được phát triển ở Task sau]
+            </div>
+
+            {/* QnA Panel */}
+            <div className="mt-8">
+              <QnAPanel 
+                auctionId={id} 
+                isSeller={user?.id === auction.sellerId} 
+                isAuthenticated={isAuthenticated} 
+              />
             </div>
           </div>
         </div>

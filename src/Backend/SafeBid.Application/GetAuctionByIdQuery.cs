@@ -13,6 +13,7 @@ public class AuctionDetailDto : AuctionDto
     public decimal? BuyNowPrice { get; set; }
     public bool IsWatched { get; set; }
     public List<string> MediaUrls { get; set; } = new();
+    public Guid SellerId { get; set; }
 }
 
 public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, Result<AuctionDetailDto>>
@@ -69,7 +70,8 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, R
             SellerName = auction.SellerName,
             MainImageUrl = mediaUrls.FirstOrDefault() ?? string.Empty,
             MediaUrls = mediaUrls,
-            IsWatched = isWatched
+            IsWatched = isWatched,
+            SellerId = auction.Auction.SellerId
         };
 
         return Result<AuctionDetailDto>.Success(dto);

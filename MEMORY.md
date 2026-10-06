@@ -1,19 +1,18 @@
 # GHI NHỚ NGỮ CẢNH (MEMORY)
 
 ## 1. Vừa làm gì?
-- Hoàn thành **Task 13 (Auction Watchlist & Bid History)**: Bổ sung tính năng Theo dõi và Lịch sử đặt giá trên Màn Chi Tiết Phiên.
-- Backend: Thêm endpoint POST `/api/auctions/{id}/watchlist`, GET `/api/auctions/{id}/bids`. Bổ sung DbSets `WatchlistItems` và `Bids` vào `AppDbContext` và tạo migration `AddWatchlistAndBids`. Cờ `isWatched` được đắp vào DTO ở chi tiết auction. Thuật toán mask tên `Nguyễn A***` đã chạy ổn.
-- Frontend: Tạo TDD unit test cho `WatchlistButton` và `BidHistoryPanel`. Xử lý kỹ thuật Optimistic UI update cho WatchlistButton.
+- Hoàn thành **Task 14 (Auction Q&A)**: Bổ sung tính năng Hỏi Đáp công khai trên trang Chi Tiết Phiên Đấu Giá.
+- Backend: Tạo entity `Question`, API `POST /api/auctions/{id}/questions` và `POST /api/auctions/{id}/questions/{questionId}/answer`, cùng `GET /api/auctions/{id}/questions`. Cấu hình RateLimit (`QuestionLimit`) 10 câu/phút. Thuật toán che giấu tên người hỏi giống Task 13.
+- Frontend: Tạo component `QnAPanel.tsx`, cho phép người mua hỏi và người bán trả lời. Hiển thị danh sách Q&A theo thời gian thực (reload list sau khi gọi API thành công). 
 - Cập nhật `openapi.yaml`.
-- Các bài test (Backend xUnit và Frontend Vitest) đều pass xanh.
+- Các bài test (Backend xUnit và Frontend Vitest) đều pass xanh (100%).
 
 ## 2. Việc dở dang
-- Có một warning "not wrapped in act(...)" khi chạy test `WatchlistButton` trên Frontend do thao tác Optimistic UI, tuy nhiên luồng test đã check đầy đủ và pass.
+- Không có việc dở dang. Mọi thứ đã hoàn thiện và passed.
 
 ## 3. Lưu ý cho phiên sau
-- Rút kinh nghiệm khi tạo Entity: Phải gọi `Domain.Entity.Create(...)` nếu class đó giấu constructor `private`.
-- Các collection trên Backend Integration Tests cần sử dụng `[Collection("IntegrationTests")]` để ăn chung `ApiTestFixture` không bị lỗi.
-- Đảm bảo gọi DB seed đầy đủ dữ liệu phụ thuộc (Category, User) trong Integration Test trước khi gọi `CreateDraft` hoặc API.
+- API RateLimit có thể được áp dụng lại ở các endpoint khác (ví dụ: bình luận, nhắn tin). Cấu hình RateLimiter trong `Program.cs` có thể được gom lại vào 1 thư mục/class extensions cho gọn nếu số lượng policy tăng lên.
+- Khi mock `fetch` trong Vitest có kiểm tra `res.status`, cần nhớ set trường `status` vào object mock (ví dụ: `status: 201`).
 
 ## 4. Task tiếp theo
-- **Task 14**: Tính năng Hỏi Đáp (Q&A) trên Màn Chi Tiết Phiên. Triển khai API `GET /qa` và `POST /qa` và UI list các câu hỏi/trả lời.
+- **CHECKPOINT REVIEW 4**: Đây là thời điểm Checkpoint. Cần rà soát và đề nghị user mở conversation mới trước khi làm Task 15 (Proxy Bidding).

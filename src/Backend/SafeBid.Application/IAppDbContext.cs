@@ -14,5 +14,6 @@ public interface IAppDbContext
     DbSet<Auction> Auctions { get; }
     DbSet<WatchlistItem> WatchlistItems { get; }
     DbSet<Bid> Bids { get; }
+    DbSet<Question> Questions { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

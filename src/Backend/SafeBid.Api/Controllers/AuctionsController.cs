@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SafeBid.Application;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,6 +104,38 @@ public class AuctionsController : ControllerBase
         if (result.IsSuccess) return Ok(new { items = result.Value });
         return NotFound(new { Error = result.Error.Message });
     }
+    [HttpGet("{id}/questions")]
+    public async Task<IActionResult> GetQuestions(Guid id, CancellationToken ct)
+    {
+        var query = new GetQuestionsQuery(id);
+        var result = await _mediator.Send(query, ct);
+        if (result.IsSuccess) return Ok(new { items = result.Value });
+        return NotFound(new { Error = result.Error.Message });
+    }
+
+    [HttpPost("{id}/questions")]
+    [Authorize]
+    [EnableRateLimiting("QuestionLimit")]
+    public async Task<IActionResult> AddQuestion(Guid id, [FromBody] AddQuestionRequest req, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var cmd = new AddQuestionCommand(id, userId, req.Content);
+        var result = await _mediator.Send(cmd, ct);
+        if (result.IsSuccess) return Created($"/api/auctions/{id}/questions", new { id = result.Value });
+        return NotFound(new { Error = result.Error.Message });
+    }
+
+    [HttpPost("{id}/questions/{questionId}/answer")]
+    [Authorize]
+    public async Task<IActionResult> AnswerQuestion(Guid id, Guid questionId, [FromBody] AnswerQuestionRequest req, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var cmd = new AnswerQuestionCommand(id, questionId, userId, req.Answer);
+        var result = await _mediator.Send(cmd, ct);
+        if (result.IsSuccess) return Ok();
+        if (result.Error.Code == "Question.Forbidden") return StatusCode(403, new { Error = result.Error.Message });
+        return NotFound(new { Error = result.Error.Message });
+    }
 }
 
 public record CreateAuctionRequest(
@@ -115,3 +148,6 @@ public record CreateAuctionRequest(
     System.DateTime StartTime,
     System.DateTime EndTime,
     System.Collections.Generic.List<string> MediaUrls);
+
+public record AddQuestionRequest(string Content);
+public record AnswerQuestionRequest(string Answer);

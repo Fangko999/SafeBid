@@ -19,6 +19,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Auction> Auctions => Set<Auction>();
     public DbSet<WatchlistItem> WatchlistItems => Set<WatchlistItem>();
     public DbSet<Bid> Bids => Set<Bid>();
+    public DbSet<Question> Questions => Set<Question>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,6 +91,14 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
             entity.HasOne(e => e.Auction).WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(e => e.Bidder).WithMany().HasForeignKey(e => e.BidderId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<Question>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
+            entity.Property(e => e.Answer).HasMaxLength(2000);
+            entity.HasOne<Auction>().WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<User>().WithMany().HasForeignKey(e => e.AskerId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
