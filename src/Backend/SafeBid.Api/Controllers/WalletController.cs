@@ -33,7 +33,7 @@ public class WalletController : ControllerBase
         
         if (wallet == null) return NotFound();
 
-        return Ok(new { availableBalance = wallet.AvailableBalance, holdAmount = wallet.HoldAmount });
+        return Ok(new WalletBalanceDto(wallet.AvailableBalance, wallet.HoldAmount));
     }
 
     [HttpGet("transactions")]
@@ -52,20 +52,21 @@ public class WalletController : ControllerBase
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request)
     {
         var userId = GetUserId();
-        try
+        var result = await _mediator.Send(new WithdrawCommand(userId, request.Amount));
+        
+        if (result.IsSuccess)
         {
-            await _mediator.Send(new WithdrawCommand(userId, request.Amount));
             return Ok();
         }
-        catch (InvalidOperationException ex)
+
+        if (result.Error.Code == "Wallet.Concurrency")
         {
-            return BadRequest(new { message = ex.Message });
+            return Conflict(new { message = result.Error.Message });
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            return Conflict(new { message = "Concurrency conflict. Please try again." });
-        }
+        
+        return BadRequest(new { message = result.Error.Message });
     }
 }
 
 public record WithdrawRequest(decimal Amount);
+public record WalletBalanceDto(decimal AvailableBalance, decimal HoldAmount);

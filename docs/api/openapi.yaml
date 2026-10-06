@@ -341,7 +341,59 @@ paths:
     post:
       summary: Approve withdrawal
       responses:
-        '200': { description: Approved }
+  # Wallet
+  /wallet/balance:
+    get:
+      summary: Get Wallet Balance
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  availableBalance: { type: number }
+                  holdAmount: { type: number }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        
+  /wallet/transactions:
+    get:
+      summary: Get Wallet Transactions
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, default: 10 }
+      responses:
+        '200':
+          description: OK
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        
+  /wallet/withdraw:
+    post:
+      summary: Request Withdrawal
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount: { type: number }
+      responses:
+        '200': { description: OK }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Conflict }
 
   # Webhooks
   /webhooks/deposit:

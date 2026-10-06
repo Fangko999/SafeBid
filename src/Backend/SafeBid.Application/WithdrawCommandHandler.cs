@@ -4,7 +4,7 @@ using SafeBid.Domain;
 
 namespace SafeBid.Application;
 
-public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand>
+public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand, Result<Unit>>
 {
     private readonly IAppDbContext _dbContext;
 
@@ -13,15 +13,18 @@ public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand>
         _dbContext = dbContext;
     }
 
-    public async Task Handle(WithdrawCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Unit>> Handle(WithdrawCommand request, CancellationToken cancellationToken)
     {
+        if (request.Amount <= 0)
+            return Result<Unit>.Failure(new Error("Wallet.InvalidAmount", "Amount must be greater than zero"));
+
         var wallet = await _dbContext.Wallets.FirstOrDefaultAsync(w => w.UserId == request.UserId, cancellationToken);
         
         if (wallet == null)
-            throw new InvalidOperationException("Wallet not found");
+            return Result<Unit>.Failure(new Error("Wallet.NotFound", "Wallet not found"));
 
         if (wallet.AvailableBalance < request.Amount)
-            throw new InvalidOperationException("Insufficient funds");
+            return Result<Unit>.Failure(new Error("Wallet.InsufficientFunds", "Insufficient funds"));
 
         wallet.AvailableBalance -= request.Amount;
         wallet.HoldAmount += request.Amount;
@@ -55,7 +58,14 @@ public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand>
             CreatedAt = DateTime.UtcNow
         });
 
-        // This will automatically throw DbUpdateConcurrencyException if the RowVersion doesn't match
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return Result<Unit>.Success(Unit.Value);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result<Unit>.Failure(new Error("Wallet.Concurrency", "Concurrency conflict. Please try again."));
+        }
     }
 }

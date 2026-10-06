@@ -22,6 +22,10 @@ export async function withdrawWithRetry(amount: number, maxRetries = 2): Promise
       continue;
     }
 
+    if (response.status === 500) {
+      throw new Error('Lỗi kết nối hệ thống, vui lòng thử lại sau.');
+    }
+
     if (response.status === 409) {
       throw new Error('Hệ thống đang bận. Vui lòng thử lại sau.');
     }

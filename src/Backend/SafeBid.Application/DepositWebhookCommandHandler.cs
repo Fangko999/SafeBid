@@ -21,6 +21,11 @@ public class DepositWebhookCommandHandler : IRequestHandler<DepositWebhookComman
             return Result<Unit>.Success(Unit.Value);
         }
 
+        if (request.Amount <= 0)
+        {
+            return Result<Unit>.Failure(new Error("Webhook.InvalidAmount", "Amount must be greater than zero"));
+        }
+
         if (!Guid.TryParse(request.ReferenceId, out var userId))
         {
             return Result<Unit>.Failure(new Error("Webhook.InvalidReferenceId", "ReferenceId is not a valid GUID"));
