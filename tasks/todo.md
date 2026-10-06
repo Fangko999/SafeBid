@@ -232,7 +232,7 @@ flowchart TD
 - **Testing Steps để test tay**: Up file png, kiểm tra console MinIO xem file có trong bucket temp không.
 - **Phụ thuộc**: Không.
 
-## Task 9: Multi-Media & Category API (F4)
+## ✅ Task 9: Multi-Media & Category API (F4) (HOÀN THÀNH)
 - **Mục tiêu**: Xử lý danh mục đa cấp (Parent/Child) và dữ liệu up nhiều ảnh/video (Bảng AuctionMedia).
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given có nhiều Category lồng nhau, When fetch, Then trả về Tree struct. Given tạo phiên, When đính kèm nhiều ảnh, Then lưu vào bảng AuctionMedia (có thứ tự hiển thị SortOrder).
 - **Lớp chạm tới**: DB (Bảng Category, AuctionMedia) / API.

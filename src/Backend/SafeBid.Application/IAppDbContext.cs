@@ -9,5 +9,7 @@ public interface IAppDbContext
     DbSet<Wallet> Wallets { get; }
     DbSet<LedgerEntry> LedgerEntries { get; }
     DbSet<WithdrawalRequest> WithdrawalRequests { get; }
+    DbSet<Category> Categories { get; }
+    DbSet<AuctionMedia> AuctionMedia { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
