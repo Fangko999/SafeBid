@@ -81,7 +81,7 @@ public class GetBidHistoryApiTests : IAsyncLifetime
         var items = json.GetProperty("items").EnumerateArray().ToList();
         
         Assert.Single(items);
-        Assert.Equal("Nguyễn V***", items[0].GetProperty("maskedBidderName").GetString());
+        Assert.Equal("Nguyễn A***", items[0].GetProperty("maskedBidderName").GetString());
         Assert.Equal(150000, items[0].GetProperty("amount").GetDecimal());
     }
 }
