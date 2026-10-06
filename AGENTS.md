@@ -17,3 +17,5 @@ Khi cần viết code tương tự, hãy đọc các file này trước để b�
 - **Frontend Page Component (Next.js + Shadcn + Zod Form):** `src/Frontend/src/app/register/page.tsx`
 - **Frontend State Management (Zustand):** `src/Frontend/src/store/authStore.ts`
 - **Frontend TDD (Vitest + JSDOM + UserEvent):** `src/Frontend/src/app/register/register.test.tsx`
+- **Integration Test (Concurrency/Race Condition):** `src/Tests/SafeBid.IntegrationTests/WalletWithdrawTests.cs`
+- **Script giả lập luồng song song (PowerShell + C#):** `scripts/test-concurrency.ps1`
