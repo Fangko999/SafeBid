@@ -46,9 +46,12 @@ describe('walletService - withdrawWithRetry', () => {
 
     const promise = withdrawWithRetry(50000);
     
+    // Attach the expect handler immediately so there's no unhandled rejection
+    const expectPromise = expect(promise).rejects.toThrow('Hệ thống đang bận. Vui lòng thử lại sau.');
+    
     await vi.runAllTimersAsync();
 
-    await expect(promise).rejects.toThrow('Hệ thống đang bận. Vui lòng thử lại sau.');
+    await expectPromise;
     expect(fetchMock).toHaveBeenCalledTimes(3); // 1 initial + 2 retries
   });
 });
