@@ -12,5 +12,7 @@ public interface IAppDbContext
     DbSet<Category> Categories { get; }
     DbSet<AuctionMedia> AuctionMedia { get; }
     DbSet<Auction> Auctions { get; }
+    DbSet<WatchlistItem> WatchlistItems { get; }
+    DbSet<Bid> Bids { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

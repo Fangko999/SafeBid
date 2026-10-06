@@ -17,6 +17,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<AuctionMedia> AuctionMedia => Set<AuctionMedia>();
     public DbSet<Auction> Auctions => Set<Auction>();
+    public DbSet<WatchlistItem> WatchlistItems => Set<WatchlistItem>();
+    public DbSet<Bid> Bids => Set<Bid>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,6 +75,21 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.Property(e => e.ReservePrice).HasColumnType("decimal(18,2)");
             entity.Property(e => e.BuyNowPrice).HasColumnType("decimal(18,2)");
             entity.Property(e => e.CurrentPrice).HasColumnType("decimal(18,2)");
+        });
+
+        modelBuilder.Entity<WatchlistItem>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.AuctionId });
+            entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Auction).WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Bid>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
+            entity.HasOne(e => e.Auction).WithMany().HasForeignKey(e => e.AuctionId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Bidder).WithMany().HasForeignKey(e => e.BidderId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

@@ -4,13 +4,14 @@ using SafeBid.Domain;
 
 namespace SafeBid.Application;
 
-public record GetAuctionByIdQuery(Guid Id) : IRequest<Result<AuctionDetailDto>>;
+public record GetAuctionByIdQuery(Guid Id, Guid? UserId = null) : IRequest<Result<AuctionDetailDto>>;
 
 public class AuctionDetailDto : AuctionDto
 {
     public decimal StepPrice { get; set; }
     public decimal? ReservePrice { get; set; }
     public decimal? BuyNowPrice { get; set; }
+    public bool IsWatched { get; set; }
     public List<string> MediaUrls { get; set; } = new();
 }
 
@@ -47,6 +48,12 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, R
             .Select(m => m.MediaUrl)
             .ToListAsync(cancellationToken);
 
+        bool isWatched = false;
+        if (request.UserId.HasValue)
+        {
+            isWatched = await _dbContext.WatchlistItems.AnyAsync(w => w.AuctionId == request.Id && w.UserId == request.UserId.Value, cancellationToken);
+        }
+
         var dto = new AuctionDetailDto
         {
             Id = auction.Auction.Id,
@@ -61,7 +68,8 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, R
             CategoryName = auction.CategoryName,
             SellerName = auction.SellerName,
             MainImageUrl = mediaUrls.FirstOrDefault() ?? string.Empty,
-            MediaUrls = mediaUrls
+            MediaUrls = mediaUrls,
+            IsWatched = isWatched
         };
 
         return Result<AuctionDetailDto>.Success(dto);

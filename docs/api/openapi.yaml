@@ -239,13 +239,40 @@ paths:
     get:
       summary: Get auction details (Chi Tiết Phiên)
       responses:
-        '200': { description: Auction details }
+        '200': 
+          description: Auction details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  title: { type: string }
+                  isWatched: { type: boolean }
   /auctions/{id}/publish:
     post:
       summary: Publish draft auction to ACTIVE
       responses:
         '200': { description: Published }
   /auctions/{id}/bids:
+    get:
+      summary: Get bid history for an auction
+      responses:
+        '200':
+          description: Bid history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        amount: { type: number }
+                        timestamp: { type: string, format: date-time }
+                        maskedBidderName: { type: string }
     post:
       summary: Place a Proxy Bid
       requestBody:

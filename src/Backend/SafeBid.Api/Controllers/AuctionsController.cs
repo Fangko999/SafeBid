@@ -70,10 +70,38 @@ public class AuctionsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetAuctionById(Guid id)
     {
-        var query = new GetAuctionByIdQuery(id);
+        Guid? userId = null;
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var parsedId))
+            userId = parsedId;
+
+        var query = new GetAuctionByIdQuery(id, userId);
         var result = await _mediator.Send(query);
         if (!result.IsSuccess) return NotFound(new { Error = result.Error.Message });
         return Ok(result.Value);
+    }
+
+    [HttpPost("{id:guid}/watchlist")]
+    [Authorize]
+    public async Task<IActionResult> ToggleWatchlist(Guid id, CancellationToken ct)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var command = new ToggleWatchlistCommand(id, userId);
+        var result = await _mediator.Send(command, ct);
+        if (result.IsSuccess) return Ok(new { isWatched = result.Value });
+        return NotFound(new { Error = result.Error.Message });
+    }
+
+    [HttpGet("{id:guid}/bids")]
+    public async Task<IActionResult> GetBidHistory(Guid id, CancellationToken ct)
+    {
+        var query = new GetBidHistoryQuery(id);
+        var result = await _mediator.Send(query, ct);
+        if (result.IsSuccess) return Ok(new { items = result.Value });
+        return NotFound(new { Error = result.Error.Message });
     }
 }
 
