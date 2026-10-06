@@ -36,6 +36,18 @@ public class WalletController : ControllerBase
         return Ok(new { availableBalance = wallet.AvailableBalance, holdAmount = wallet.HoldAmount });
     }
 
+    [HttpGet("transactions")]
+    public async Task<IActionResult> GetTransactions([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1 || pageSize > 50) pageSize = 10;
+        
+        var userId = GetUserId();
+        var result = await _mediator.Send(new GetWalletTransactionsQuery(userId, page, pageSize));
+        
+        return Ok(result);
+    }
+
     [HttpPost("withdraw")]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request)
     {

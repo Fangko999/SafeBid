@@ -200,7 +200,7 @@ flowchart TD
 - **Testing Steps để test tay**: Bắn 2 POST rút tiền song song bằng Postman.
 - **Phụ thuộc**: Task 5.
 
-## Task 7: Wallet UI (F3)
+## ✅ Task 7: Wallet UI (F3) (HOÀN THÀNH)
 - **Mục tiêu**: Màn hình xem số dư và lịch sử giao dịch.
 - **Tiêu chí hoàn thành (Given/When/Then)**: Given ở trang ví, When fetch, Then hiện số dư và list Lịch sử.
 - **Lớp chạm tới**: UI.
